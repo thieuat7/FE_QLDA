@@ -1,8 +1,8 @@
 // app/index.js
 const express = require('express');
-const routes = require('./routes');
+const routes = require('./router'); // Sửa đường dẫn
 const app = express();
-const PORT = process.env.PORT || 5000; // Dùng port 5000 như yêu cầu
+const PORT = process.env.PORT || 5000;
 
 // Middleware để đọc JSON body
 app.use(express.json());
@@ -11,7 +11,7 @@ app.use(express.json());
 app.use('/', routes);
 
 // Khởi động server
-const server = app.listen(PORT, '0.0.0.0', () => {
+const server = app.listen(PORT, () => {  // Bỏ '0.0.0.0' để tránh bind issues
     console.log(`Server running on port ${PORT}`);
 });
 

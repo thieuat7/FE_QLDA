@@ -47,15 +47,9 @@ unit_test_job:
 build_check_job:
   stage: build_and_health_check
   script:
-    - echo "Installing dependencies..."
     - npm install
-    - echo "Starting server in background..."
-    # 4. Chạy server ở chế độ nền
     - npm run start &
-    - sleep 5 # Chờ 5 giây cho server khởi động
-    - echo "Checking /health endpoint..."
-    # 5. Kiểm tra API /health
-    # Dùng `grep` để đảm bảo có chữ "ok" trong kết quả
+    - sleep 10  # Tăng lên 10 giây
     - curl http://localhost:5000/health | grep "ok"
   # Chỉ chạy job này khi commit lên nhánh 'main'
   rules:

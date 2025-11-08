@@ -8,7 +8,7 @@ const dbPath = path.join(__dirname, 'db.json');
 
 // 1. GET /health
 router.get('/health', (req, res) => {
-    res.status(200).json({ status: 'ok', message: 'Server is running' });
+    res.status(200).json({ status: 'ok' }); // Chỉ trả về { status: 'ok' }
 });
 
 // 2. GET /users

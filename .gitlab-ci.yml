@@ -1,0 +1,73 @@
+# .gitlab-ci.yml
+
+# Định nghĩa các giai đoạn của pipeline
+stages:
+  - feature_test
+  - unit_test
+  - build_and_health_check
+  - deploy
+
+# Sử dụng image Node.js 18 làm môi trường chạy mặc định
+image: node:18
+
+# Cache thư mục node_modules để chạy nhanh hơn
+cache:
+  paths:
+    - node_modules/
+
+# Công việc (job) 1: Kiểm tra code (lint) và kiểm tra conflict
+feature_test_job:
+  stage: feature_test
+  script:
+    - echo "Running Lint and Conflict Check..."
+    - npm install  # Cài devDependencies như eslint
+    # 1. Chạy linter
+    - npm run lint
+    # 2. Kiểm tra conflict
+    - git fetch origin main
+    - git diff --check origin/main
+  # Chỉ chạy job này khi có Merge Request
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+
+# Công việc (job) 2: Chạy Unit Test
+unit_test_job:
+  stage: unit_test
+  script:
+    - echo "Installing dependencies..."
+    - npm install
+    - echo "Running Unit Tests..."
+    # 3. Chạy unit test (jest)
+    - npm run test
+  # Chỉ chạy job này khi commit lên nhánh 'main'
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+
+# Công việc (job) 3: Build và Kiểm tra Sức khỏe (Health Check)
+build_check_job:
+  stage: build_and_health_check
+  script:
+    - echo "Installing dependencies..."
+    - npm install
+    - echo "Starting server in background..."
+    # 4. Chạy server ở chế độ nền
+    - npm run start &
+    - sleep 5 # Chờ 5 giây cho server khởi động
+    - echo "Checking /health endpoint..."
+    # 5. Kiểm tra API /health
+    # Dùng `grep` để đảm bảo có chữ "ok" trong kết quả
+    - curl http://localhost:5000/health | grep "ok"
+  # Chỉ chạy job này khi commit lên nhánh 'main'
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+
+# Công việc (job) 4: Deploy (Tùy chọn)
+deploy_job:
+  stage: deploy
+  script:
+    - echo "Deploying to production server..."
+    # 6. Thay thế bằng script deploy thật nếu có
+    - echo "Deployed successfully!"
+  # Chỉ chạy job này khi commit lên nhánh 'main'
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'

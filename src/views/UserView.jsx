@@ -8,7 +8,7 @@ const UserView = ({ users, loading, error, onAddUser, onLoadUsers }) => {
     useEffect(() => {
         // Tự động load users khi component mount
         onLoadUsers();
-    }, []);
+    }, [onLoadUsers]);
 
     const handleSubmit = (e) => {
         e.preventDefault();

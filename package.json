@@ -1,19 +1,28 @@
 {
-    "name": "groupx-ci-cd-demo",
+    "name": "web-ban-hang-frontend",
     "version": "1.0.0",
-    "description": "Backend app cho bai tap CI/CD",
-    "main": "app/index.js",
+    "type": "module",
+    "description": "Frontend Website bán hàng với React + Vite (MVC Pattern)",
     "scripts": {
-        "start": "node app/index.js",
-        "test": "jest",
-        "lint": "eslint ."
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
+        "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
     },
     "dependencies": {
-        "express": "^4.18.2"
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "react-router-dom": "^6.27.0",
+        "axios": "^1.7.7"
     },
     "devDependencies": {
+        "@types/react": "^18.3.11",
+        "@types/react-dom": "^18.3.1",
+        "@vitejs/plugin-react": "^4.3.3",
+        "vite": "^5.4.10",
         "eslint": "^8.57.0",
-        "jest": "^29.7.0",
-        "supertest": "^6.3.4"
+        "eslint-plugin-react": "^7.37.1",
+        "eslint-plugin-react-hooks": "^4.6.2",
+        "eslint-plugin-react-refresh": "^0.4.12"
     }
 }

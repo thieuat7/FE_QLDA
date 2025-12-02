@@ -1,67 +1,109 @@
-# .gitlab-ci.yml
-
-# Định nghĩa các giai đoạn của pipeline
 stages:
-  - feature_test
-  - unit_test
-  - build_and_health_check
+  - install
+  - lint
+  - build
+  - test
   - deploy
 
-# Sử dụng image Node.js 18 làm môi trường chạy mặc định
-image: node:18
-
-# Cache thư mục node_modules để chạy nhanh hơn
+# Cache node_modules để tăng tốc độ build
 cache:
   paths:
     - node_modules/
 
-# Công việc (job) 1: Kiểm tra code (lint) và kiểm tra conflict
-feature_test_job:
-  stage: feature_test
+variables:
+  NODE_VERSION: "20"
+
+# Stage 1: Install dependencies
+install_dependencies:
+  stage: install
+  image: node:${NODE_VERSION}
   script:
-    - echo "Running Lint and Conflict Check..."
-    - npm install  # Cài devDependencies như eslint
-    # 1. Chạy linter
+    - echo "📦 Installing dependencies..."
+    - npm ci
+  artifacts:
+    paths:
+      - node_modules/
+    expire_in: 1 hour
+  only:
+    - main
+    - merge_requests
+
+# Stage 2: Lint - Kiểm tra code quality
+lint_code:
+  stage: lint
+  image: node:${NODE_VERSION}
+  script:
+    - echo "🔍 Running ESLint..."
     - npm run lint
-    # 2. Kiểm tra conflict
+  dependencies:
+    - install_dependencies
+  only:
+    - main
+    - merge_requests
+
+# Stage 3: Build - Build production
+build_production:
+  stage: build
+  image: node:${NODE_VERSION}
+  script:
+    - echo "🏗️ Building production..."
+    - npm run build
+    - echo "✅ Build completed successfully"
+    - ls -la dist/
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 week
+  dependencies:
+    - install_dependencies
+  only:
+    - main
+
+# Stage 4: Test - Run tests (nếu có)
+# test_unit:
+#   stage: test
+#   image: node:${NODE_VERSION}
+#   script:
+#     - echo "🧪 Running unit tests..."
+#     - npm run test
+#   dependencies:
+#     - install_dependencies
+#   only:
+#     - main
+#     - merge_requests
+
+# Stage 5: Deploy - Deploy lên server
+deploy_production:
+  stage: deploy
+  image: node:${NODE_VERSION}
+  script:
+    - echo "🚀 Deploying to production..."
+    - echo "📁 Build artifacts ready in dist/ folder"
+    - ls -la dist/
+    # Thêm script deploy thực tế ở đây, ví dụ:
+    # - scp -r dist/* user@server:/var/www/html/
+    # - ssh user@server "sudo systemctl restart nginx"
+    - echo "✅ Deployment completed successfully!"
+  dependencies:
+    - build_production
+  only:
+    - main
+  when: manual  # Yêu cầu confirm thủ công trước khi deploy
+  environment:
+    name: production
+    url: https://your-domain.com
+
+# Job đặc biệt: Kiểm tra merge request
+mr_validation:
+  stage: lint
+  image: node:${NODE_VERSION}
+  script:
+    - echo "✅ Validating merge request..."
+    - npm ci
+    - npm run lint
+    - echo "🔍 Checking for conflicts with main branch..."
     - git fetch origin main
     - git diff --check origin/main
-  # Chỉ chạy job này khi có Merge Request
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-
-# Công việc (job) 2: Chạy Unit Test
-unit_test_job:
-  stage: unit_test
-  script:
-    - echo "Installing dependencies..."
-    - npm install
-    - echo "Running Unit Tests..."
-    # 3. Chạy unit test (jest)
-    - npm run test
-  # Chỉ chạy job này khi commit lên nhánh 'main'
-  rules:
-    - if: $CI_COMMIT_BRANCH == 'main'
-
-# Công việc (job) 3: Build và Kiểm tra Sức khỏe (Health Check)
-build_check_job:
-  stage: build_and_health_check
-  script:
-    - npm install
-    - npm run start &
-    - sleep 10  # Tăng lên 10 giây
-    - curl http://localhost:5000/health | grep "ok"
-  # Chỉ chạy job này khi commit lên nhánh 'main'
-  rules:
-    - if: $CI_COMMIT_BRANCH == 'main'
-
-# Công việc (job) 4: Deploy (Tùy chọn)
-deploy_job:
-  stage: deploy
-  script:
-    - echo "Deploying to production server..."
-    # 6. Thay thế bằng script deploy thật nếu có
-    - echo "Deployed successfully!"
-  # Chỉ chạy job này khi commit lên nhánh 'main'
-  rules:
-    - if: $CI_COMMIT_BRANCH == 'main'
+  only:
+    - merge_requests
+  allow_failure: false

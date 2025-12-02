@@ -1,59 +1,156 @@
-# Báo cáo Bài tập Nhóm - CI/CD Demo (Nhóm X)
+# Frontend - Web Bán Hàng (React + Vite + MVC Pattern)
 
-## 1. Giới thiệu
+## 📁 Cấu trúc thư mục
 
-Repo này là sản phẩm cho bài tập CI/CD, bao gồm một ứng dụng backend đơn giản và một pipeline tự động hóa của GitLab.
+```
+FE_BanHang/
+├── public/                 # Static assets
+│   └── vite.svg
+├── src/
+│   ├── models/            # 📊 MODEL - Quản lý dữ liệu và business logic
+│   │   └── UserModel.js
+│   ├── views/             # 🎨 VIEW - React Components (UI)
+│   │   ├── UserView.jsx
+│   │   └── UserView.css
+│   ├── controllers/       # 🎮 CONTROLLER - Logic xử lý giữa Model-View
+│   │   └── UserController.js
+│   ├── services/          # 🌐 API Services
+│   │   └── apiService.js
+│   ├── assets/            # Images, fonts, etc.
+│   ├── App.jsx           # Main App Component
+│   ├── App.css
+│   ├── main.jsx          # Entry point
+│   └── index.css
+├── index.html
+├── vite.config.js
+└── package.json
+```
 
-* **Công nghệ sử dụng:**
-    * **Backend:** Node.js, Express.js
-    * **Database:** File JSON (`db.json`)
-    * **Testing:** Jest, Supertest
-    * **Linting:** ESLint
-    * **CI/CD:** GitLab CI/CD
+## 🏗️ Mô hình MVC trong React
 
-## 2. Mô tả Pipeline
+### Model (`src/models/UserModel.js`)
+- Quản lý state và business logic
+- Validate dữ liệu
+- Xử lý data transformation
 
-Pipeline của nhóm được cấu hình trong file `.gitlab-ci.yml` và bao gồm 4 giai đoạn (stages):
+### View (`src/views/UserView.jsx`)
+- React Component hiển thị UI
+- Nhận props từ Controller
+- Render dữ liệu và xử lý sự kiện UI
 
-1.  **`feature_test`**:
-    * **Mục đích:** Đảm bảo code mới trên các nhánh "feature" (đang chờ merge) tuân thủ chuẩn code và không gây conflict.
-    * **Công việc (Job):** `feature_test_job`
-    * **Hành động:** Chạy `npm run lint` (dùng ESLint) và `git diff --check origin/main` (kiểm tra conflict).
-    * **Kích hoạt:** Chỉ chạy khi có **Merge Request**.
+### Controller (`src/controllers/UserController.js`)
+- Custom Hook kết nối Model và View
+- Xử lý logic nghiệp vụ
+- Gọi API thông qua Service layer
 
-2.  **`unit_test`**:
-    * **Mục đích:** Xác minh code mới trên nhánh `main` vượt qua tất cả các bài kiểm tra logic (unit test).
-    * **Công việc (Job):** `unit_test_job`
-    * **Hành động:** Chạy `npm run test` (dùng Jest).
-    * **Kích hoạt:** Chỉ chạy khi có **Commit lên nhánh `main`**.
+### Service (`src/services/apiService.js`)
+- Gọi API backend
+- Sử dụng axios
+- Centralized API management
 
-3.  **`build_and_health_check`**:
-    * **Mục đích:** Đảm bảo ứng dụng có thể build (cài đặt) và khởi động thành công.
-    * **Công việc (Job):** `build_check_job`
-    * **Hành động:** Chạy `npm install`, khởi động server (`npm run start &`), và dùng `curl` để kiểm tra `GET /health`.
-    * **Kích hoạt:** Chỉ chạy khi có **Commit lên nhánh `main`** (và `unit_test` thành công).
+## 🚀 Cài đặt và Chạy
 
-4.  **`deploy`**:
-    * **Mục đích:** (Mô phỏng) Triển khai ứng dụng lên môi trường production.
-    * **Công việc (Job):** `deploy_job`
-    * **Hành động:** Chỉ `echo` ra thông báo "Deployed successfully!".
-    * **Kích hoạt:** Chỉ chạy khi có **Commit lên nhánh `main`** (và `build_and_health_check` thành công).
+### 1. Cài đặt dependencies
+```bash
+npm install
+```
 
-## 3. Minh chứng Pipeline
+### 2. Chạy development server
+```bash
+npm run dev
+```
 
-*(Dán ảnh chụp màn hình pipeline chạy thành công ở đây)*
+Frontend sẽ chạy tại: **http://localhost:3000**
 
-**Hình 1: Pipeline tổng quan chạy thành công trên nhánh `main`**
+### 3. Build production
+```bash
+npm run build
+```
 
+### 4. Preview production build
+```bash
+npm run preview
+```
 
-**Hình 2: Chi tiết job `unit_test_job` chạy thành công**
+## 🔌 Kết nối Backend
 
+Frontend sử dụng Vite proxy để kết nối với backend API:
 
-## 4. Phân công công việc
+- Backend API: `http://localhost:5000`
+- Frontend dev: `http://localhost:3000`
+- Proxy: `/api` → `http://localhost:5000`
 
-| Thành viên | Nhiệm vụ |
-| :--- | :--- |
-| Nguyễn Văn A | Xây dựng 3 API backend (Express.js) |
-| Trần Thị B | Viết Unit Test (Jest) và Cấu hình Linter (ESLint) |
-| Lê Văn C | Cấu hình file `.gitlab-ci.yml` (Stages 1 & 2) |
-| Phạm Thị D | Cấu hình file `.gitlab-ci.yml` (Stages 3 & 4) và viết `README.md` |
+**Ví dụ:**
+- Frontend gọi: `GET /api/users`
+- Thực tế gọi: `GET http://localhost:5000/users`
+
+## 📚 API Endpoints (từ Backend)
+
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| GET | `/health` | Kiểm tra server |
+| GET | `/users` | Lấy danh sách người dùng |
+| POST | `/user` | Thêm người dùng mới |
+
+## 🎯 Tính năng
+
+- ✅ Hiển thị danh sách người dùng
+- ✅ Thêm người dùng mới
+- ✅ Tải lại danh sách
+- ✅ Xử lý loading state
+- ✅ Xử lý error
+- ✅ Responsive design
+
+## 🛠️ Tech Stack
+
+- **React 18** - UI Library
+- **Vite** - Build tool & Dev server
+- **Axios** - HTTP client
+- **React Router DOM** - Routing (sẵn sàng mở rộng)
+- **CSS3** - Styling với Gradient đẹp
+
+## 📝 Scripts
+
+```json
+{
+  "dev": "vite",              // Chạy dev server
+  "build": "vite build",      // Build production
+  "preview": "vite preview",  // Preview production build
+  "lint": "eslint ."          // Lint code
+}
+```
+
+## 🎨 UI Features
+
+- Gradient background đẹp mắt
+- Card-based user list
+- Hover effects
+- Loading spinner
+- Error/Success alerts
+- Responsive design
+
+## 🔄 Workflow MVC
+
+1. User tương tác với **View** (UI)
+2. View trigger event đến **Controller**
+3. Controller xử lý logic và gọi **Service**
+4. Service gọi API backend
+5. Controller cập nhật **Model**
+6. Model thay đổi state
+7. View tự động re-render với dữ liệu mới
+
+## 📦 Dependencies
+
+### Production
+- `react` & `react-dom` - Core React
+- `axios` - HTTP client
+- `react-router-dom` - Routing
+
+### Development
+- `vite` - Build tool
+- `@vitejs/plugin-react` - React plugin cho Vite
+- `eslint` & plugins - Code linting
+
+---
+
+**Note:** Đây là folder FRONTEND thuần túy. Backend được quản lý riêng biệt ở folder khác.

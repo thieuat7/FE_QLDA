@@ -69,13 +69,41 @@ class ApiService {
 
     // ============ USER APIs ============
 
-    // Lấy danh sách người dùng
+    // Lấy thông tin user hiện tại
+    async getCurrentUser() {
+        const response = await axiosInstance.get('/auth/me');
+        return response.data;
+    }
+
+    // Cập nhật thông tin user
+    async updateProfile(userData) {
+        const response = await axiosInstance.put('/auth/update-profile', userData);
+        return response.data;
+    }
+
+    // Đổi mật khẩu
+    async changePassword(passwordData) {
+        const response = await axiosInstance.post('/auth/change-password', passwordData);
+        return response.data;
+    }
+
+    // Upload avatar
+    async uploadAvatar(formData) {
+        const response = await axiosInstance.post('/auth/upload-avatar', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return response.data;
+    }
+
+    // Lấy danh sách người dùng (admin)
     async getUsers() {
         const response = await axiosInstance.get('/users');
         return response.data;
     }
 
-    // Thêm người dùng mới
+    // Thêm người dùng mới (admin)
     async addUser(userData) {
         const response = await axiosInstance.post('/user', userData);
         return response.data;

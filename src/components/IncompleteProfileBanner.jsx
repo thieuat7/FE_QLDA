@@ -31,7 +31,7 @@ const IncompleteProfileBanner = () => {
                         {' '}để có thể đặt hàng và sử dụng đầy đủ tính năng.
                     </p>
                 </div>
-                <Link to="/update-profile" className="banner-button">
+                <Link to="/profile" className="banner-button">
                     Cập nhật ngay
                 </Link>
             </div>

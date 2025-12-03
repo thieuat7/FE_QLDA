@@ -2,6 +2,7 @@
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import IncompleteProfileBanner from '../components/IncompleteProfileBanner';
+import { getAvatarUrl } from '../utils/avatarHelper';
 import './HomePage.css';
 
 const HomePage = () => {
@@ -19,7 +20,16 @@ const HomePage = () => {
             <div className="home-header">
                 <h1>🏠 Trang chủ</h1>
                 <div className="user-info">
+                    <img
+                        src={getAvatarUrl(user?.avatar)}
+                        alt="Avatar"
+                        className="user-avatar"
+                        onClick={() => navigate('/profile')}
+                    />
                     <span>Xin chào, <strong>{user?.fullName || user?.username}</strong>!</span>
+                    <button onClick={() => navigate('/profile')} className="btn btn-profile">
+                        👤 Tài khoản
+                    </button>
                     <button onClick={handleLogout} className="btn btn-logout">
                         🚪 Đăng xuất
                     </button>

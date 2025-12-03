@@ -59,18 +59,6 @@ build_production:
   only:
     - main
 
-# Stage 4: Test - Run tests (nếu có)
-# test_unit:
-#   stage: test
-#   image: node:${NODE_VERSION}
-#   script:
-#     - echo "🧪 Running unit tests..."
-#     - npm run test
-#   dependencies:
-#     - install_dependencies
-#   only:
-#     - main
-#     - merge_requests
 
 # Stage 5: Deploy - Deploy lên server
 deploy_production:

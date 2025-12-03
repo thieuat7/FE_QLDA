@@ -1,0 +1,135 @@
+.home-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 2rem;
+}
+
+.home-header {
+    max-width: 1200px;
+    margin: 0 auto 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 1.5rem 2rem;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.home-header h1 {
+    font-size: 2rem;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.user-info span {
+    color: #7f8c8d;
+    font-size: 1rem;
+}
+
+.user-info strong {
+    color: #667eea;
+}
+
+.btn-logout {
+    padding: 0.7rem 1.5rem;
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-logout:hover {
+    background: #ff5252;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+}
+
+.home-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.welcome-card {
+    background: white;
+    padding: 3rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.welcome-card h2 {
+    font-size: 2.5rem;
+    color: #667eea;
+    margin-bottom: 1rem;
+}
+
+.welcome-card>p {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+    margin-bottom: 3rem;
+}
+
+.user-details {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem;
+    border-radius: 15px;
+    color: white;
+    text-align: left;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.user-details h3 {
+    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
+}
+
+.user-details ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.user-details li {
+    padding: 0.8rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 1rem;
+}
+
+.user-details li:last-child {
+    border-bottom: none;
+}
+
+.user-details strong {
+    opacity: 0.8;
+    margin-right: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .home-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .home-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .welcome-card {
+        padding: 2rem 1.5rem;
+    }
+
+    .welcome-card h2 {
+        font-size: 1.8rem;
+    }
+}

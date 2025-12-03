@@ -47,7 +47,7 @@ const RequireCompleteProfile = ({ children }) => {
                             <div className="modal-actions">
                                 <button
                                     className="btn btn-primary"
-                                    onClick={() => navigate('/update-profile')}
+                                    onClick={() => navigate('/profile')}
                                 >
                                     Cập nhật ngay
                                 </button>

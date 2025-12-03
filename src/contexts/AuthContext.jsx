@@ -2,6 +2,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect } from 'react';
 import AuthModel from '../models/AuthModel';
+import apiService from '../services/apiService';
 
 const AuthContext = createContext(null);
 
@@ -14,12 +15,32 @@ export const AuthProvider = ({ children }) => {
 
     // Load auth state khi app khởi động
     useEffect(() => {
-        const loadAuth = () => {
+        const loadAuth = async () => {
             const isLoggedIn = authModel.loadAuth();
             if (isLoggedIn) {
-                setUser(authModel.getUser());
-                setToken(authModel.getToken());
-                setIsAuthenticated(true);
+                // Sync với backend để lấy avatar mới nhất
+                try {
+                    const response = await apiService.getCurrentUser();
+                    if (response.success && response.user) {
+                        // Cập nhật user với data mới từ backend
+                        const updatedUser = response.user;
+                        authModel.saveAuth(authModel.getToken(), updatedUser);
+                        setUser(updatedUser);
+                        setToken(authModel.getToken());
+                        setIsAuthenticated(true);
+                    } else {
+                        // Nếu backend không trả về user, dùng localStorage
+                        setUser(authModel.getUser());
+                        setToken(authModel.getToken());
+                        setIsAuthenticated(true);
+                    }
+                } catch (error) {
+                    console.error('Failed to sync user from backend:', error);
+                    // Fallback to localStorage nếu API lỗi
+                    setUser(authModel.getUser());
+                    setToken(authModel.getToken());
+                    setIsAuthenticated(true);
+                }
             }
             setLoading(false);
         };

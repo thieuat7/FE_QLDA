@@ -6,7 +6,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import GoogleCallbackPage from './pages/GoogleCallbackPage';
 import FacebookCallbackPage from './pages/FacebookCallbackPage';
-import UpdateProfilePage from './pages/UpdateProfilePage';
+import ProfilePage from './pages/ProfilePage';
 import HomePage from './pages/HomePage';
 import './App.css';
 
@@ -21,12 +21,12 @@ function App() {
                     <Route path="/auth/google/success" element={<GoogleCallbackPage />} />
                     <Route path="/auth/facebook/success" element={<FacebookCallbackPage />} />
 
-                    {/* Protected routes - Cập nhật profile */}
+                    {/* Protected routes - Profile */}
                     <Route
-                        path="/update-profile"
+                        path="/profile"
                         element={
                             <ProtectedRoute>
-                                <UpdateProfilePage />
+                                <ProfilePage />
                             </ProtectedRoute>
                         }
                     />

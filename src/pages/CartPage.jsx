@@ -18,7 +18,7 @@ const CartPage = () => {
     } = useCart();
 
     const [showConfirmClear, setShowConfirmClear] = useState(false);
-    const [categories, setCategories] = useState([]);
+    const [categories] = useState([]);
 
     const formatPrice = (price) => {
         return new Intl.NumberFormat('vi-VN', {

@@ -1,0 +1,138 @@
+/* Product Card Styles */
+.product-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.product-image {
+    width: 100%;
+    height: 250px;
+    overflow: hidden;
+    background: #f5f5f5;
+    position: relative;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image img {
+    transform: scale(1.05);
+}
+
+.badge {
+    position: absolute;
+    top: 10px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 1;
+}
+
+.badge-hot {
+    right: 10px;
+    background: #ff4757;
+    color: white;
+}
+
+.badge-discount {
+    left: 10px;
+    background: #ffa502;
+    color: white;
+}
+
+.product-info {
+    padding: 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #2c3e50;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 48px;
+}
+
+.product-category {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 12px;
+}
+
+.product-price {
+    margin-bottom: 12px;
+    margin-top: auto;
+}
+
+.price-sale {
+    font-size: 18px;
+    font-weight: bold;
+    color: #ff4757;
+    margin-right: 8px;
+}
+
+.price-original {
+    font-size: 14px;
+    color: #999;
+    text-decoration: line-through;
+}
+
+.price {
+    font-size: 18px;
+    font-weight: bold;
+    color: #667eea;
+}
+
+.product-stock {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.in-stock {
+    color: #2ecc71;
+}
+
+.out-stock {
+    color: #e74c3c;
+}
+
+@media (max-width: 768px) {
+    .product-image {
+        height: 180px;
+    }
+
+    .product-title {
+        font-size: 14px;
+        min-height: 40px;
+    }
+
+    .price-sale,
+    .price {
+        font-size: 16px;
+    }
+}

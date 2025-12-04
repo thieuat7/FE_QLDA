@@ -109,19 +109,33 @@ class ApiService {
         return response.data;
     }
 
+    // ============ CATEGORY APIs ============
+
+    // Lấy danh sách danh mục
+    async getCategories() {
+        const response = await axiosInstance.get('/categories');
+        return response.data;
+    }
+
     // ============ PRODUCT APIs ============
 
-    // Lấy danh sách sản phẩm
-    async getProducts(params) {
-        const response = await axiosInstance.get('/products', { params });
+    // Lấy danh sách sản phẩm với filter, sort, pagination
+    async getProducts(params = {}) {
+        const { page = 1, limit = 12, category_id, sort } = params;
+        const queryParams = new URLSearchParams();
+
+        queryParams.append('page', page);
+        queryParams.append('limit', limit);
+        if (category_id) queryParams.append('category_id', category_id);
+        if (sort) queryParams.append('sort', sort);
+
+        const response = await axiosInstance.get(`/products?${queryParams.toString()}`);
         return response.data;
     }
 
     // Tìm kiếm sản phẩm
     async searchProducts(keyword) {
-        const response = await axiosInstance.get('/products/search', {
-            params: { keyword }
-        });
+        const response = await axiosInstance.get(`/products/search?q=${encodeURIComponent(keyword)}`);
         return response.data;
     }
 

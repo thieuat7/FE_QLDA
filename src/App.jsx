@@ -8,6 +8,7 @@ import GoogleCallbackPage from './pages/GoogleCallbackPage';
 import FacebookCallbackPage from './pages/FacebookCallbackPage';
 import ProfilePage from './pages/ProfilePage';
 import HomePage from './pages/HomePage';
+import ProductDetailPage from './pages/ProductDetailPage';
 import './App.css';
 
 function App() {
@@ -37,6 +38,16 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <HomePage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    {/* Protected routes - Product Detail */}
+                    <Route
+                        path="/product/:id"
+                        element={
+                            <ProtectedRoute>
+                                <ProductDetailPage />
                             </ProtectedRoute>
                         }
                     />

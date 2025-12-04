@@ -8,7 +8,7 @@ const ProductCard = ({ product }) => {
     const navigate = useNavigate();
 
     const handleClick = () => {
-        navigate(`/products/${product.id}`);
+        navigate(`/product/${product.id}`);
     };
 
     const hasDiscount = product.priceSale && product.priceSale < product.price;

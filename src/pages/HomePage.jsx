@@ -5,7 +5,6 @@ import apiService from '../services/apiService';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import IncompleteProfileBanner from '../components/IncompleteProfileBanner';
-import CategoryCard from '../components/CategoryCard';
 import ProductCard from '../components/ProductCard';
 import Pagination from '../components/Pagination';
 import './HomePage.css';
@@ -60,6 +59,7 @@ const HomePage = () => {
     // Load products khi filters thay đổi
     useEffect(() => {
         loadProducts();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filters]);
 
     // Auto slide banner
@@ -68,6 +68,7 @@ const HomePage = () => {
             setCurrentSlide((prev) => (prev + 1) % bannerSlides.length);
         }, 5000);
         return () => clearInterval(interval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Sync filters với URL params
@@ -76,6 +77,7 @@ const HomePage = () => {
         if (categoryFromUrl && categoryFromUrl !== filters.category_id) {
             setFilters(prev => ({ ...prev, category_id: categoryFromUrl, page: 1 }));
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchParams]);
 
     const loadCategories = async () => {

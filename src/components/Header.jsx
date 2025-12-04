@@ -1,15 +1,19 @@
 // Header Component - Tái sử dụng cho toàn bộ website
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useCart } from '../contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { getAvatarUrl } from '../utils/avatarHelper';
 import './Header.css';
 
 const Header = ({ categories = [], onCategoryFilter, onSearch }) => {
     const { user, logout } = useAuth();
+    const { getTotalItems } = useCart();
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
     const [showUserMenu, setShowUserMenu] = useState(false);
+
+    const cartItemCount = getTotalItems();
 
     const handleLogout = () => {
         logout();
@@ -82,10 +86,12 @@ const Header = ({ categories = [], onCategoryFilter, onSearch }) => {
                                     </div>
                                 )}
                             </div>
-                            <button className="action-btn cart-btn">
+                            <button className="action-btn cart-btn" onClick={() => navigate('/cart')}>
                                 <span className="icon">🛒</span>
                                 <span className="text">Giỏ hàng</span>
-                                <span className="badge">0</span>
+                                {cartItemCount > 0 && (
+                                    <span className="badge">{cartItemCount}</span>
+                                )}
                             </button>
                         </div>
                     </div>

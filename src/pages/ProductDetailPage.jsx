@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import apiService from '../services/apiService';
 import { getImageUrl, handleImageError } from '../utils/imageHelper';
+import { useCart } from '../contexts/CartContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import './ProductDetailPage.css';
@@ -10,6 +11,7 @@ import './ProductDetailPage.css';
 const ProductDetailPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { addToCart } = useCart();
 
     // State
     const [product, setProduct] = useState(null);
@@ -22,6 +24,7 @@ const ProductDetailPage = () => {
     const [size, setSize] = useState('S');
     const [color, setColor] = useState('Đen');
     const [activeTab, setActiveTab] = useState('description');
+    const [showToast, setShowToast] = useState(false);
 
     // Load product detail
     useEffect(() => {
@@ -109,12 +112,15 @@ const ProductDetailPage = () => {
             price: product.priceSale || product.price,
             quantity: quantity,
             size: size,
-            color: color
+            color: color,
+            productCode: product.productCode
         };
 
-        // TODO: Implement cart functionality with CartContext
-        console.log('Add to cart:', cartItem);
-        alert(`Đã thêm ${product.title} vào giỏ hàng!`);
+        addToCart(cartItem);
+
+        // Show success message
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
     };
 
     const handleBuyNow = () => {
@@ -499,6 +505,13 @@ const ProductDetailPage = () => {
             </div>
 
             <Footer />
+
+            {/* Success Toast */}
+            {showToast && (
+                <div className="cart-toast">
+                    ✓ Đã thêm vào giỏ hàng!
+                </div>
+            )}
         </div>
     );
 };

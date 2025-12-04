@@ -21,7 +21,6 @@ const ProductDetailPage = () => {
     const [quantity, setQuantity] = useState(1);
     const [size, setSize] = useState('S');
     const [color, setColor] = useState('Đen');
-    const [addedToCart, setAddedToCart] = useState(false);
     const [activeTab, setActiveTab] = useState('description');
 
     // Load product detail
@@ -116,9 +115,6 @@ const ProductDetailPage = () => {
         // TODO: Implement cart functionality with CartContext
         console.log('Add to cart:', cartItem);
         alert(`Đã thêm ${product.title} vào giỏ hàng!`);
-
-        setAddedToCart(true);
-        setTimeout(() => setAddedToCart(false), 2000);
     };
 
     const handleBuyNow = () => {

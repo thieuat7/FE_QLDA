@@ -12,6 +12,11 @@ import HomePage from './pages/HomePage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
+import VNPayReturnPage from './pages/VNPayReturnPage';
+import MomoReturnPage from './pages/MomoReturnPage';
+import BankTransferPage from './pages/BankTransferPage';
+import OrderSuccessPage from './pages/OrderSuccessPage';
+import OrderFailedPage from './pages/OrderFailedPage';
 import './App.css';
 
 function App() {
@@ -72,6 +77,56 @@ function App() {
                             element={
                                 <ProtectedRoute>
                                     <CheckoutPage />
+                                </ProtectedRoute>
+                            }
+                        />
+
+                        {/* Protected routes - VNPay Return */}
+                        <Route
+                            path="/vnpay-return"
+                            element={
+                                <ProtectedRoute>
+                                    <VNPayReturnPage />
+                                </ProtectedRoute>
+                            }
+                        />
+
+                        {/* Protected routes - Momo Return */}
+                        <Route
+                            path="/momo-return"
+                            element={
+                                <ProtectedRoute>
+                                    <MomoReturnPage />
+                                </ProtectedRoute>
+                            }
+                        />
+
+                        {/* Protected routes - Bank Transfer */}
+                        <Route
+                            path="/bank-transfer"
+                            element={
+                                <ProtectedRoute>
+                                    <BankTransferPage />
+                                </ProtectedRoute>
+                            }
+                        />
+
+                        {/* Protected routes - Order Success */}
+                        <Route
+                            path="/order-success"
+                            element={
+                                <ProtectedRoute>
+                                    <OrderSuccessPage />
+                                </ProtectedRoute>
+                            }
+                        />
+
+                        {/* Protected routes - Order Failed */}
+                        <Route
+                            path="/order-failed"
+                            element={
+                                <ProtectedRoute>
+                                    <OrderFailedPage />
                                 </ProtectedRoute>
                             }
                         />

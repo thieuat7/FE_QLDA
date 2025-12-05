@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { useCart } from '../contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { getImageUrl, handleImageError } from '../utils/imageHelper';
+import orderService from '../services/orderService';
+import paymentService from '../services/paymentService';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import './CheckoutPage.css';
@@ -22,6 +24,7 @@ const CheckoutPage = () => {
         discountCode: ''
     });
 
+    const [selectedBank, setSelectedBank] = useState(''); // Ngân hàng cho VNPAY
     const [errors, setErrors] = useState({});
     const [discountAmount, setDiscountAmount] = useState(0);
     const [isApplyingDiscount, setIsApplyingDiscount] = useState(false);
@@ -123,40 +126,135 @@ const CheckoutPage = () => {
 
         setIsSubmitting(true);
         try {
-            // TODO: Call API để tạo đơn hàng
+            // Check giỏ hàng trước
+            if (cartItems.length === 0) {
+                alert('Giỏ hàng trống! Vui lòng thêm sản phẩm.');
+                return;
+            }
+
+            // Map payment method to typePayment number
+            const getTypePayment = (method) => {
+                const types = {
+                    'COD': 1,
+                    'VNPAY': 2,
+                    'MOMO': 3,
+                    'BANK_TRANSFER': 4
+                };
+                return types[method] || 1;
+            };
+
+            // Map cart items sang format backend mong đợi
+            const orderItems = cartItems.map(item => ({
+                productId: item.id,
+                quantity: item.quantity,
+                price: parseFloat(item.price),
+                size: item.size || '',
+                color: item.color || ''
+            }));
+
             const orderData = {
                 customerName: formData.customerName,
                 phone: formData.phone,
                 address: formData.address,
                 email: formData.email,
-                paymentMethod: formData.paymentMethod,
-                discountCode: formData.discountCode,
-                items: cartItems,
-                subtotal: getTotalPrice(),
-                discount: discountAmount,
-                total: getTotalPrice() - discountAmount
+                note: '',
+                items: orderItems,
+                totalAmount: getTotalPrice() - discountAmount,
+                typePayment: getTypePayment(formData.paymentMethod)
             };
 
-            console.log('Order data:', orderData);
+            console.log('=== DEBUG CHECKOUT ===');
+            console.log('Cart items count:', cartItems.length);
+            console.log('Order data:', JSON.stringify(orderData, null, 2));
 
-            // const response = await fetch('/api/orders/checkout', {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //         'Authorization': `Bearer ${token}`
-            //     },
-            //     body: JSON.stringify(orderData)
-            // });
+            // Bước 1: Tạo đơn hàng qua orderService
+            const orderResponse = await orderService.createOrder(orderData);
 
-            // const data = await response.json();
+            console.log('=== ORDER RESPONSE ===');
+            console.log('Response:', JSON.stringify(orderResponse, null, 2));
 
-            // Demo: Thành công
-            alert('Đặt hàng thành công! Mã đơn hàng: #ORD' + Date.now());
+            if (!orderResponse.success) {
+                console.error('Order creation failed:', orderResponse);
+                throw new Error(orderResponse.message || 'Tạo đơn hàng thất bại');
+            }
+
+            const orderId = orderResponse.data.order.id;
+            console.log('Order ID:', orderId);
+
+            // Bước 2: Xử lý thanh toán theo phương thức
+            if (formData.paymentMethod === 'VNPAY') {
+                // Gọi API tạo URL thanh toán VNPAY Sandbox
+                const paymentResponse = await paymentService.createVNPayUrl(
+                    orderId.toString(),
+                    orderData.totalAmount,
+                    `Thanh toan don hang ${orderId}`,
+                    selectedBank // Ngân hàng đã chọn (VNPAYQR, NCB, BIDV, ...)
+                );
+
+                if (!paymentResponse.success) {
+                    throw new Error(paymentResponse.message || 'Tạo URL VNPAY thất bại');
+                }
+
+                console.log('Payment URL:', paymentResponse.data.paymentUrl);
+                alert('Chuyển hướng đến VNPAY Sandbox (Test - không tốn tiền thật)');
+
+                // Redirect đến VNPAY Sandbox
+                window.location.href = paymentResponse.data.paymentUrl;
+
+                clearCart();
+                return;
+            }
+
+            if (formData.paymentMethod === 'MOMO') {
+                // Gọi API tạo URL thanh toán MoMo
+                const paymentResponse = await paymentService.createMomoUrl(
+                    orderId.toString(),
+                    orderData.totalAmount,
+                    `Thanh toan don hang ${orderId}`
+                );
+
+                if (!paymentResponse.success) {
+                    throw new Error(paymentResponse.message || 'Tạo URL MoMo thất bại');
+                }
+
+                console.log('MoMo Payment URL:', paymentResponse.data.paymentUrl);
+                alert('Chuyển hướng đến MoMo');
+
+                // Redirect đến MoMo
+                window.location.href = paymentResponse.data.paymentUrl;
+
+                clearCart();
+                return;
+            }
+
+            if (formData.paymentMethod === 'BANK_TRANSFER') {
+                // Chuyển đến trang hướng dẫn chuyển khoản
+                navigate(`/bank-transfer?orderId=${orderId}&amount=${orderData.totalAmount}&orderCode=${orderId}`);
+                return;
+            }
+
+            // Phương thức COD - Thanh toán khi nhận hàng
+            alert('Đặt hàng thành công! Mã đơn hàng: #' + orderId);
             clearCart();
-            navigate('/');
+            navigate('/order-success', {
+                state: {
+                    orderId: orderId,
+                    paymentMethod: 'COD'
+                }
+            });
         } catch (error) {
-            console.error('Checkout error:', error);
-            alert('Đặt hàng thất bại. Vui lòng thử lại!');
+            console.error('=== CHECKOUT ERROR ===');
+            console.error('Error object:', error);
+            console.error('Error message:', error.message);
+            console.error('Error response:', error.response);
+            console.error('Error data:', error.response?.data);
+
+            // Hiển thị lỗi chi tiết
+            const errorMessage = error.response?.data?.message
+                || error.message
+                || 'Đặt hàng thất bại. Vui lòng thử lại!';
+
+            alert(`Lỗi: ${errorMessage}`);
         } finally {
             setIsSubmitting(false);
         }
@@ -319,10 +417,38 @@ const CheckoutPage = () => {
                                                 <span className="payment-icon">💳</span>
                                                 <div>
                                                     <strong>VNPAY</strong>
-                                                    <p>Cổng thanh toán VNPAY</p>
+                                                    <p>Cổng thanh toán VNPAY (ATM, Visa, MasterCard)</p>
                                                 </div>
                                             </div>
                                         </label>
+
+                                        {/* Chọn ngân hàng cho VNPAY */}
+                                        {formData.paymentMethod === 'VNPAY' && (
+                                            <div className="bank-selection">
+                                                <label htmlFor="bank-select">Chọn ngân hàng (không bắt buộc)</label>
+                                                <select
+                                                    id="bank-select"
+                                                    value={selectedBank}
+                                                    onChange={(e) => setSelectedBank(e.target.value)}
+                                                >
+                                                    <option value="">Tất cả ngân hàng</option>
+                                                    <option value="VNPAYQR">VNPAY QR</option>
+                                                    <option value="VNBANK">Ngân hàng nội địa</option>
+                                                    <option value="INTCARD">Thẻ quốc tế</option>
+                                                    <option value="NCB">NCB</option>
+                                                    <option value="BIDV">BIDV</option>
+                                                    <option value="VIETCOMBANK">Vietcombank</option>
+                                                    <option value="VIETINBANK">VietinBank</option>
+                                                    <option value="TECHCOMBANK">Techcombank</option>
+                                                    <option value="MBBANK">MB Bank</option>
+                                                    <option value="SACOMBANK">Sacombank</option>
+                                                    <option value="AGRIBANK">Agribank</option>
+                                                    <option value="ACB">ACB</option>
+                                                    <option value="SCB">SCB</option>
+                                                    <option value="VPB">VPBank</option>
+                                                </select>
+                                            </div>
+                                        )}
 
                                         <label className="payment-option">
                                             <input

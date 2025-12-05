@@ -1,0 +1,306 @@
+/* Order Success & Failed Page Styles */
+.order-success-page,
+.order-failed-page {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: calc(100vh - 160px);
+    padding: 60px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.order-success-page .container,
+.order-failed-page .container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.success-card,
+.failed-card {
+    background: white;
+    padding: 50px;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Icons */
+.success-icon,
+.failed-icon {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.5rem;
+    font-weight: bold;
+    margin: 0 auto 30px;
+    animation: scaleIn 0.5s ease-out;
+}
+
+@keyframes scaleIn {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.success-icon {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+.failed-icon {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+}
+
+/* Title */
+.success-card h1,
+.failed-card h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 15px 0;
+}
+
+.success-card h1 {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.failed-card h1 {
+    color: #ef4444;
+}
+
+/* Order ID */
+.order-id {
+    font-size: 1.1rem;
+    color: #7f8c8d;
+    margin: 0 0 30px 0;
+}
+
+.order-id strong {
+    color: #2c3e50;
+    font-weight: 700;
+}
+
+/* Messages */
+.success-message,
+.failed-message {
+    margin: 30px 0;
+    padding: 25px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    line-height: 1.6;
+}
+
+.success-message p,
+.failed-message p {
+    margin: 10px 0;
+    color: #2c3e50;
+    font-size: 1rem;
+}
+
+.payment-info {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+    color: #666 !important;
+}
+
+.failed-message {
+    background: #fff5f5;
+    border: 2px solid #ffebee;
+}
+
+.error-text {
+    color: #e74c3c !important;
+    font-weight: 600;
+}
+
+/* Order Steps */
+.order-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 40px 0;
+    padding: 30px 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.step-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e0e0e0;
+    color: #999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    transition: all 0.3s;
+}
+
+.step.active .step-icon {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.step p {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.step.active p {
+    color: #10b981;
+    font-weight: 600;
+}
+
+.step-line {
+    width: 60px;
+    height: 2px;
+    background: #e0e0e0;
+    margin: 0 10px;
+}
+
+/* Actions */
+.actions {
+    display: flex;
+    gap: 15px;
+    margin: 30px 0 20px 0;
+}
+
+.btn-primary,
+.btn-secondary {
+    flex: 1;
+    padding: 14px 25px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+    background: white;
+    color: #667eea;
+    border: 2px solid #667eea;
+}
+
+.btn-secondary:hover {
+    background: #f8f9ff;
+    transform: translateY(-2px);
+}
+
+/* Redirect Notice */
+.redirect-notice {
+    font-size: 0.9rem;
+    color: #95a5a6;
+    font-style: italic;
+    margin: 20px 0 0 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+
+    .success-card,
+    .failed-card {
+        padding: 35px 25px;
+    }
+
+    .success-icon,
+    .failed-icon {
+        width: 80px;
+        height: 80px;
+        font-size: 2.5rem;
+    }
+
+    .success-card h1,
+    .failed-card h1 {
+        font-size: 1.5rem;
+    }
+
+    .order-steps {
+        overflow-x: auto;
+        justify-content: flex-start;
+        padding: 20px;
+    }
+
+    .step-line {
+        width: 40px;
+    }
+
+    .step p {
+        font-size: 0.75rem;
+    }
+
+    .actions {
+        flex-direction: column;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .success-card,
+    .failed-card {
+        padding: 30px 20px;
+    }
+
+    .success-icon,
+    .failed-icon {
+        width: 70px;
+        height: 70px;
+        font-size: 2rem;
+    }
+
+    .step-icon {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+    }
+
+    .step-line {
+        width: 30px;
+    }
+}

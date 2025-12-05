@@ -155,3 +155,4 @@ class ApiService {
 }
 
 export default new ApiService();
+export { axiosInstance as apiClient };

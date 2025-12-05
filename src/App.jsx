@@ -11,6 +11,7 @@ import ProfilePage from './pages/ProfilePage';
 import HomePage from './pages/HomePage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
 import './App.css';
 
 function App() {
@@ -61,6 +62,16 @@ function App() {
                             element={
                                 <ProtectedRoute>
                                     <CartPage />
+                                </ProtectedRoute>
+                            }
+                        />
+
+                        {/* Protected routes - Checkout */}
+                        <Route
+                            path="/checkout"
+                            element={
+                                <ProtectedRoute>
+                                    <CheckoutPage />
                                 </ProtectedRoute>
                             }
                         />

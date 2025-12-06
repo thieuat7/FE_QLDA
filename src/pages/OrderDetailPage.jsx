@@ -88,11 +88,10 @@ const OrderDetailPage = () => {
     };
 
     const getPaymentMethodText = (typePayment) => {
+        // Convert to string for consistent comparison
+        const typeStr = String(typePayment).toLowerCase();
+
         const methodMap = {
-            1: 'Thanh toán khi nhận hàng (COD)',
-            2: 'VNPAY',
-            3: 'MoMo',
-            4: 'Chuyển khoản ngân hàng',
             '1': 'Thanh toán khi nhận hàng (COD)',
             '2': 'VNPAY',
             '3': 'MoMo',
@@ -103,7 +102,7 @@ const OrderDetailPage = () => {
             'bank': 'Chuyển khoản ngân hàng',
             'bank_transfer': 'Chuyển khoản ngân hàng'
         };
-        return methodMap[typePayment] || 'Không xác định';
+        return methodMap[typeStr] || 'Không xác định';
     };
 
     const formatCurrency = (amount) => {

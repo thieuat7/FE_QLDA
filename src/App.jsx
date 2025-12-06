@@ -18,6 +18,7 @@ import BankTransferPage from './pages/BankTransferPage';
 import OrderSuccessPage from './pages/OrderSuccessPage';
 import OrderFailedPage from './pages/OrderFailedPage';
 import OrdersPage from './pages/OrdersPage';
+import OrderDetailPage from './pages/OrderDetailPage';
 import './App.css';
 
 function App() {
@@ -138,6 +139,16 @@ function App() {
                             element={
                                 <ProtectedRoute>
                                     <OrdersPage />
+                                </ProtectedRoute>
+                            }
+                        />
+
+                        {/* Protected routes - Order Detail */}
+                        <Route
+                            path="/orders/:id"
+                            element={
+                                <ProtectedRoute>
+                                    <OrderDetailPage />
                                 </ProtectedRoute>
                             }
                         />

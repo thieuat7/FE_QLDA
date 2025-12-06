@@ -14,10 +14,6 @@ const OrdersPage = () => {
     const [statusFilter, setStatusFilter] = useState(''); // all, processing, shipping, delivered, cancelled
     const limit = 10;
 
-    useEffect(() => {
-        loadOrders();
-    }, [currentPage, statusFilter]);
-
     const loadOrders = async () => {
         setLoading(true);
         try {
@@ -56,6 +52,10 @@ const OrdersPage = () => {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        loadOrders();
+    }, [currentPage, statusFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const getStatusText = (status) => {
         const statusMap = {

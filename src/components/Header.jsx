@@ -80,6 +80,9 @@ const Header = ({ categories = [], onCategoryFilter, onSearch }) => {
                                         <button onClick={() => { navigate('/profile'); setShowUserMenu(false); }}>
                                             👤 Tài khoản
                                         </button>
+                                        <button onClick={() => { navigate('/orders'); setShowUserMenu(false); }}>
+                                            📦 Đơn hàng của tôi
+                                        </button>
                                         <button onClick={handleLogout}>
                                             🚪 Đăng xuất
                                         </button>

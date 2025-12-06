@@ -17,6 +17,7 @@ import MomoReturnPage from './pages/MomoReturnPage';
 import BankTransferPage from './pages/BankTransferPage';
 import OrderSuccessPage from './pages/OrderSuccessPage';
 import OrderFailedPage from './pages/OrderFailedPage';
+import OrdersPage from './pages/OrdersPage';
 import './App.css';
 
 function App() {
@@ -127,6 +128,16 @@ function App() {
                             element={
                                 <ProtectedRoute>
                                     <OrderFailedPage />
+                                </ProtectedRoute>
+                            }
+                        />
+
+                        {/* Protected routes - Orders List */}
+                        <Route
+                            path="/orders"
+                            element={
+                                <ProtectedRoute>
+                                    <OrdersPage />
                                 </ProtectedRoute>
                             }
                         />

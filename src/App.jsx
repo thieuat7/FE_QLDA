@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import RequireAdmin from './components/RequireAdmin';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import GoogleCallbackPage from './pages/GoogleCallbackPage';
@@ -19,6 +20,8 @@ import OrderSuccessPage from './pages/OrderSuccessPage';
 import OrderFailedPage from './pages/OrderFailedPage';
 import OrdersPage from './pages/OrdersPage';
 import OrderDetailPage from './pages/OrderDetailPage';
+import AdminDashboardPage from './pages/admin/AdminDashboardPage';
+import CategoryManagementPage from './pages/admin/CategoryManagementPage';
 import './App.css';
 
 function App() {
@@ -149,6 +152,29 @@ function App() {
                             element={
                                 <ProtectedRoute>
                                     <OrderDetailPage />
+                                </ProtectedRoute>
+                            }
+                        />
+
+                        {/* Admin routes - Category Management */}
+                        <Route
+                            path="/admin/dashboard"
+                            element={
+                                <ProtectedRoute>
+                                    <RequireAdmin>
+                                        <AdminDashboardPage />
+                                    </RequireAdmin>
+                                </ProtectedRoute>
+                            }
+                        />
+
+                        <Route
+                            path="/admin/categories"
+                            element={
+                                <ProtectedRoute>
+                                    <RequireAdmin>
+                                        <CategoryManagementPage />
+                                    </RequireAdmin>
                                 </ProtectedRoute>
                             }
                         />

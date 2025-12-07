@@ -23,6 +23,7 @@ import OrderDetailPage from './pages/OrderDetailPage';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import CategoryManagementPage from './pages/admin/CategoryManagementPage';
 import ProductManagementPage from './pages/admin/ProductManagementPage';
+import OrderManagementPage from './pages/admin/OrderManagementPage';
 import './App.css';
 
 function App() {
@@ -186,6 +187,17 @@ function App() {
                                 <ProtectedRoute>
                                     <RequireAdmin>
                                         <ProductManagementPage />
+                                    </RequireAdmin>
+                                </ProtectedRoute>
+                            }
+                        />
+
+                        <Route
+                            path="/admin/orders"
+                            element={
+                                <ProtectedRoute>
+                                    <RequireAdmin>
+                                        <OrderManagementPage />
                                     </RequireAdmin>
                                 </ProtectedRoute>
                             }

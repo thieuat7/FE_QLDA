@@ -3,12 +3,14 @@ import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthModel from '../models/AuthModel';
 import apiService from '../services/apiService';
+import { useAuth } from '../contexts/AuthContext';
 
 const useAuthController = () => {
     const [model] = useState(() => new AuthModel());
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+    const { login: setAuthContext } = useAuth();
 
     // Xử lý đăng ký
     const handleRegister = useCallback(async (formData, setFormErrors) => {
@@ -84,17 +86,29 @@ const useAuthController = () => {
                 password: formData.password
             });
 
-            if (response.success && response.token) {
-                // Lưu token và user info
-                model.saveAuth(response.token, response.user);
+            if (response.success && response.data?.token) {
+                // Lưu token và user info vào localStorage
+                model.saveAuth(response.data.token, response.data.user);
 
-                // Redirect về trang chủ hoặc trang trước đó
-                const redirectTo = sessionStorage.getItem('redirectAfterLogin') || '/';
-                sessionStorage.removeItem('redirectAfterLogin');
+                // Cập nhật AuthContext
+                setAuthContext(response.data.token, response.data.user);
 
-                setTimeout(() => {
-                    navigate(redirectTo);
-                }, 500);
+                // Kiểm tra role để redirect đúng trang
+                const userRole = response.data.user?.role;
+                const isAdmin = userRole === 'admin' || userRole === 1 || userRole === '1';
+
+                let redirectTo;
+                if (isAdmin) {
+                    // Admin -> redirect đến dashboard
+                    redirectTo = '/admin/dashboard';
+                } else {
+                    // User thường -> redirect đến trang chủ hoặc trang trước đó
+                    redirectTo = sessionStorage.getItem('redirectAfterLogin') || '/';
+                    sessionStorage.removeItem('redirectAfterLogin');
+                }
+
+                // Navigate ngay lập tức
+                navigate(redirectTo);
             }
 
         } catch (err) {

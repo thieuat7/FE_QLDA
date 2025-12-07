@@ -71,10 +71,12 @@ export const AuthProvider = ({ children }) => {
 
     // Login
     const login = (tokenData, userData) => {
+        console.log('AuthContext.login called with:', { tokenData, userData });
         authModel.saveAuth(tokenData, userData);
         setUser(userData);
         setToken(tokenData);
         setIsAuthenticated(true);
+        console.log('AuthContext state updated:', { user: userData, isAuthenticated: true });
     };
 
     // Logout

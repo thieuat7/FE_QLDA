@@ -9,6 +9,7 @@ const LoginView = ({ onLogin, loading, error }) => {
         password: ''
     });
     const [formErrors, setFormErrors] = useState({});
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -65,17 +66,27 @@ const LoginView = ({ onLogin, loading, error }) => {
 
                     <div className="form-group">
                         <label htmlFor="password">Mật khẩu</label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            placeholder="Nhập mật khẩu"
-                            className={formErrors.password ? 'error' : ''}
-                            disabled={loading}
-                            autoComplete="current-password"
-                        />
+                        <div className="password-input-wrapper">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                id="password"
+                                name="password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                placeholder="Nhập mật khẩu"
+                                className={formErrors.password ? 'error' : ''}
+                                disabled={loading}
+                                autoComplete="current-password"
+                            />
+                            <button
+                                type="button"
+                                className="toggle-password"
+                                onClick={() => setShowPassword(!showPassword)}
+                                tabIndex="-1"
+                            >
+                                {showPassword ? '👁️' : '👁️‍🗨️'}
+                            </button>
+                        </div>
                         {formErrors.password && (
                             <span className="error-message">{formErrors.password}</span>
                         )}

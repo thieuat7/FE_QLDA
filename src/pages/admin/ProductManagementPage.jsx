@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import AdminLayout from '../../components/AdminLayout';
 import './ProductManagementPage.css';
 
@@ -36,11 +36,6 @@ const ProductManagementPage = () => {
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
 
-    useEffect(() => {
-        fetchCategories();
-        fetchProducts();
-    }, [currentPage, filterCategory, sortBy]);
-
     const fetchCategories = async () => {
         try {
             const response = await fetch('http://localhost:3000/api/categories');
@@ -53,7 +48,7 @@ const ProductManagementPage = () => {
         }
     };
 
-    const fetchProducts = async () => {
+    const fetchProducts = useCallback(async () => {
         try {
             setLoading(true);
             let url = `http://localhost:3000/api/products?page=${currentPage}&limit=10`;
@@ -79,7 +74,12 @@ const ProductManagementPage = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [currentPage, filterCategory, sortBy]);
+
+    useEffect(() => {
+        fetchCategories();
+        fetchProducts();
+    }, [fetchProducts]);
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];

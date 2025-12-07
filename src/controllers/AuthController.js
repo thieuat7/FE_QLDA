@@ -124,7 +124,7 @@ const useAuthController = () => {
         } finally {
             setLoading(false);
         }
-    }, [model, navigate]);
+    }, [model, navigate, setAuthContext]);
 
     // Xử lý đăng xuất
     const handleLogout = useCallback(() => {

@@ -147,7 +147,8 @@ const ProfilePage = () => {
         setMessage({ type: '', text: '' });
 
         try {
-            const response = await apiService.updateProfile({
+            // Use new API endpoint: PUT /api/users/me
+            const response = await apiService.updateUserProfile({
                 userName: profileForm.userName,
                 email: profileForm.email,
                 fullName: profileForm.fullName,

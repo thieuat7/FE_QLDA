@@ -98,14 +98,38 @@ class ApiService {
     }
 
     // Lấy danh sách người dùng (admin)
-    async getUsers() {
-        const response = await axiosInstance.get('/users');
+    async getUsers(page = 1, limit = 10) {
+        const response = await axiosInstance.get(`/users?page=${page}&limit=${limit}`);
+        return response.data;
+    }
+
+    // Lấy thông tin profile của chính mình
+    async getUserProfile() {
+        const response = await axiosInstance.get('/users/me');
+        return response.data;
+    }
+
+    // Cập nhật profile của chính mình
+    async updateUserProfile(userData) {
+        const response = await axiosInstance.put('/users/me', userData);
+        return response.data;
+    }
+
+    // Cập nhật user (admin) - bao gồm role
+    async updateUser(userId, userData) {
+        const response = await axiosInstance.put(`/users/${userId}`, userData);
+        return response.data;
+    }
+
+    // Xóa user (admin)
+    async deleteUser(userId) {
+        const response = await axiosInstance.delete(`/users/${userId}`);
         return response.data;
     }
 
     // Thêm người dùng mới (admin)
     async addUser(userData) {
-        const response = await axiosInstance.post('/user', userData);
+        const response = await axiosInstance.post('/users', userData);
         return response.data;
     }
 

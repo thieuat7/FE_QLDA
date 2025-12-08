@@ -25,11 +25,13 @@ const ProductDetailPage = () => {
     const [color, setColor] = useState('Đen');
     const [activeTab, setActiveTab] = useState('description');
     const [showToast, setShowToast] = useState(false);
+    const [availableDiscounts, setAvailableDiscounts] = useState([]);
 
     // Load product detail
     useEffect(() => {
         loadProductDetail();
         loadCategories();
+        loadAvailableDiscounts();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
@@ -84,6 +86,52 @@ const ProductDetailPage = () => {
             }
         } catch (err) {
             console.error('Load related products error:', err);
+        }
+    };
+
+    const loadAvailableDiscounts = async () => {
+        try {
+            const response = await fetch('http://localhost:3000/api/discounts/public');
+
+            const result = await response.json();
+            console.log('=== DISCOUNT API RESPONSE ===');
+            console.log('Full result:', result);
+
+            if (result.success) {
+                console.log('Total discounts from API:', result.data.discounts.length);
+
+                // Lọc các mã giảm giá còn hiệu lực và đang active
+                const now = new Date();
+                console.log('Current time:', now);
+
+                const validDiscounts = result.data.discounts.filter(discount => {
+                    const startDate = new Date(discount.startDate);
+                    const endDate = new Date(discount.endDate);
+                    const isTimeValid = startDate <= now && now <= endDate;
+                    const hasUsageLeft = !discount.usageLimit || discount.usedCount < discount.usageLimit;
+
+                    console.log(`Discount ${discount.code}:`, {
+                        isActive: discount.isActive,
+                        startDate: startDate,
+                        endDate: endDate,
+                        isTimeValid: isTimeValid,
+                        usageLimit: discount.usageLimit,
+                        usedCount: discount.usedCount,
+                        hasUsageLeft: hasUsageLeft,
+                        passed: discount.isActive && isTimeValid && hasUsageLeft
+                    });
+
+                    return discount.isActive && isTimeValid && hasUsageLeft;
+                });
+
+                console.log('Valid discounts after filter:', validDiscounts.length);
+                console.log('Valid discounts:', validDiscounts);
+                setAvailableDiscounts(validDiscounts.slice(0, 4)); // Giới hạn 4 mã
+            } else {
+                console.log('API returned success: false');
+            }
+        } catch (err) {
+            console.error('Load discounts error:', err);
         }
     };
 
@@ -273,15 +321,32 @@ const ProductDetailPage = () => {
                         </div>
 
                         {/* Discount Codes */}
-                        <div className="discount-codes">
-                            <p className="discount-label">Mã giảm giá bạn có thể sử dụng:</p>
-                            <div className="code-list">
-                                <span className="code-badge">DEC20</span>
-                                <span className="code-badge">DEC50</span>
-                                <span className="code-badge">DEC80</span>
-                                <span className="code-badge">DEC150</span>
+                        {availableDiscounts.length > 0 && (
+                            <div className="discount-codes">
+                                <p className="discount-label">Mã giảm giá bạn có thể sử dụng:</p>
+                                <div className="code-list">
+                                    {availableDiscounts.map(discount => {
+                                        // Kiểm tra xem sản phẩm có đủ điều kiện không
+                                        const productPrice = product.priceSale || product.price;
+                                        const isApplicable = !discount.minOrderAmount || productPrice >= discount.minOrderAmount;
+
+                                        return (
+                                            <span
+                                                key={discount.id}
+                                                className={`code-badge ${!isApplicable ? 'disabled' : ''}`}
+                                                title={
+                                                    isApplicable
+                                                        ? `${discount.description || ''} - ${discount.type === 'percent' ? `Giảm ${discount.value}%` : `Giảm ${formatPrice(discount.value)}`}${discount.minOrderAmount ? ` (Đơn tối thiểu: ${formatPrice(discount.minOrderAmount)})` : ''}`
+                                                        : `Đơn hàng tối thiểu: ${formatPrice(discount.minOrderAmount)}`
+                                                }
+                                            >
+                                                {discount.code}
+                                            </span>
+                                        );
+                                    })}
+                                </div>
                             </div>
-                        </div>
+                        )}
 
                         {/* Color Selection */}
                         <div className="product-option">

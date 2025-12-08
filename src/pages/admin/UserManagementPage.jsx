@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import apiService from '../../services/apiService';
 import AdminLayout from '../../components/AdminLayout';
 import './UserManagementPage.css';
@@ -34,11 +34,7 @@ const UserManagementPage = () => {
         role: 'customer'
     });
 
-    useEffect(() => {
-        fetchUsers();
-    }, [pagination.currentPage, pagination.limit]);
-
-    const fetchUsers = async () => {
+    const fetchUsers = useCallback(async () => {
         try {
             setLoading(true);
             const result = await apiService.getUsers(pagination.currentPage, pagination.limit);
@@ -55,7 +51,11 @@ const UserManagementPage = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [pagination.currentPage, pagination.limit]);
+
+    useEffect(() => {
+        fetchUsers();
+    }, [fetchUsers]);
 
     const handleAddUser = () => {
         setAddFormData({

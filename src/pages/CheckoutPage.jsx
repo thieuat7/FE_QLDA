@@ -1,5 +1,5 @@
 // Checkout Page - Trang thanh toán
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCart } from '../contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { getImageUrl, handleImageError } from '../utils/imageHelper';
@@ -29,6 +29,35 @@ const CheckoutPage = () => {
     const [discountAmount, setDiscountAmount] = useState(0);
     const [isApplyingDiscount, setIsApplyingDiscount] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [appliedDiscount, setAppliedDiscount] = useState(null);
+    const [discountError, setDiscountError] = useState('');
+    const [availableDiscounts, setAvailableDiscounts] = useState([]);
+
+    // Load available discounts
+    useEffect(() => {
+        loadAvailableDiscounts();
+    }, []);
+
+    const loadAvailableDiscounts = async () => {
+        try {
+            const response = await fetch('http://localhost:3000/api/discounts/public');
+            const result = await response.json();
+
+            if (result.success) {
+                const now = new Date();
+                const validDiscounts = result.data.discounts.filter(discount => {
+                    const startDate = new Date(discount.startDate);
+                    const endDate = new Date(discount.endDate);
+                    const isTimeValid = startDate <= now && now <= endDate;
+                    const hasUsageLeft = !discount.usageLimit || discount.usedCount < discount.usageLimit;
+                    return discount.isActive && isTimeValid && hasUsageLeft;
+                });
+                setAvailableDiscounts(validDiscounts);
+            }
+        } catch (err) {
+            console.error('Load discounts error:', err);
+        }
+    };
 
     const formatPrice = (price) => {
         return new Intl.NumberFormat('vi-VN', {
@@ -79,33 +108,50 @@ const CheckoutPage = () => {
         return Object.keys(newErrors).length === 0;
     };
 
+    const handleSelectDiscount = (code) => {
+        setFormData(prev => ({ ...prev, discountCode: code }));
+        setDiscountError('');
+    };
+
     const handleApplyDiscount = async () => {
         if (!formData.discountCode.trim()) {
-            alert('Vui lòng nhập mã giảm giá');
+            setDiscountError('Vui lòng nhập mã giảm giá');
             return;
         }
 
         setIsApplyingDiscount(true);
-        try {
-            // TODO: Call API để áp dụng mã giảm giá
-            // const response = await fetch('/api/orders/apply-discount', {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify({
-            //         discountCode: formData.discountCode,
-            //         productIds: cartItems.map(item => item.id)
-            //     })
-            // });
-            // const data = await response.json();
-            // setDiscountAmount(data.discountAmount);
+        setDiscountError('');
 
-            // Demo: giảm giá 10%
-            const discount = getTotalPrice() * 0.1;
-            setDiscountAmount(discount);
-            alert('Áp dụng mã giảm giá thành công!');
+        try {
+            const orderTotal = getTotalPrice();
+
+            const response = await fetch('http://localhost:3000/api/discounts/validate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    code: formData.discountCode,
+                    orderAmount: orderTotal
+                })
+            });
+
+            const result = await response.json();
+
+            if (!result.success) {
+                setDiscountError(result.message || 'Mã giảm giá không hợp lệ');
+                return;
+            }
+
+            const discount = result.data.discount;
+            const calculatedDiscount = parseFloat(discount.discountAmount);
+
+            setDiscountAmount(calculatedDiscount);
+            setAppliedDiscount(discount);
+            alert(`Áp dụng mã giảm giá thành công! Giảm ${formatPrice(calculatedDiscount)}`);
         } catch (error) {
             console.error('Apply discount error:', error);
-            alert('Mã giảm giá không hợp lệ');
+            setDiscountError('Có lỗi xảy ra khi áp dụng mã giảm giá');
         } finally {
             setIsApplyingDiscount(false);
         }
@@ -524,13 +570,57 @@ const CheckoutPage = () => {
                                 </div>
 
                                 <div className="discount-section">
-                                    <h3>Mã giảm giá</h3>
+                                    <h3>🎫 ƯU ĐÁI - ONLY ONLINE</h3>
+
+                                    {/* Hiển thị các mã giảm giá có sẵn */}
+                                    {availableDiscounts.length > 0 && (
+                                        <div className="available-discounts">
+                                            {availableDiscounts.map(discount => {
+                                                const orderTotal = getTotalPrice();
+                                                const isApplicable = !discount.minOrderAmount || orderTotal >= discount.minOrderAmount;
+                                                const isSelected = formData.discountCode === discount.code;
+
+                                                return (
+                                                    <div
+                                                        key={discount.id}
+                                                        className={`discount-card ${!isApplicable ? 'disabled' : ''} ${isSelected ? 'selected' : ''}`}
+                                                        onClick={() => isApplicable && handleSelectDiscount(discount.code)}
+                                                    >
+                                                        <div className="discount-card-header">
+                                                            <div className="discount-badge-icon">💸</div>
+                                                            <div className="discount-card-code">{discount.code}</div>
+                                                        </div>
+                                                        <div className="discount-card-body">
+                                                            <div className="discount-card-desc">
+                                                                {discount.type === 'percent'
+                                                                    ? `Giảm ${discount.value}% đơn từ ${formatPrice(discount.minOrderAmount || 0)}`
+                                                                    : `Giảm ${formatPrice(discount.value)} đơn từ ${formatPrice(discount.minOrderAmount || 0)}`
+                                                                }
+                                                            </div>
+                                                            <div className="discount-card-expire">
+                                                                HSD: {new Date(discount.endDate).toLocaleDateString('vi-VN')}
+                                                            </div>
+                                                        </div>
+                                                        {!isApplicable && (
+                                                            <div className="discount-card-overlay">
+                                                                Không đủ điều kiện
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+
                                     <div className="discount-input-group">
                                         <input
                                             type="text"
                                             name="discountCode"
                                             value={formData.discountCode}
-                                            onChange={handleInputChange}
+                                            onChange={(e) => {
+                                                handleInputChange(e);
+                                                setDiscountError('');
+                                            }}
                                             placeholder="Nhập mã giảm giá"
                                             className="discount-input"
                                         />
@@ -540,9 +630,20 @@ const CheckoutPage = () => {
                                             disabled={isApplyingDiscount}
                                             className="btn-apply-discount"
                                         >
-                                            {isApplyingDiscount ? '...' : 'Áp dụng'}
+                                            {isApplyingDiscount ? '...' : 'Áp dụng Voucher'}
                                         </button>
                                     </div>
+                                    {discountError && (
+                                        <p className="discount-error">{discountError}</p>
+                                    )}
+                                    {appliedDiscount && discountAmount > 0 && (
+                                        <div className="discount-applied">
+                                            <span className="success-icon">✓</span>
+                                            <span>
+                                                Mã <strong>{appliedDiscount.code}</strong> đã được áp dứng
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="summary-totals">

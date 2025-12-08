@@ -24,6 +24,7 @@ import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import CategoryManagementPage from './pages/admin/CategoryManagementPage';
 import ProductManagementPage from './pages/admin/ProductManagementPage';
 import OrderManagementPage from './pages/admin/OrderManagementPage';
+import DiscountManagementPage from './pages/admin/DiscountManagementPage';
 import './App.css';
 
 function App() {
@@ -198,6 +199,17 @@ function App() {
                                 <ProtectedRoute>
                                     <RequireAdmin>
                                         <OrderManagementPage />
+                                    </RequireAdmin>
+                                </ProtectedRoute>
+                            }
+                        />
+
+                        <Route
+                            path="/admin/discounts"
+                            element={
+                                <ProtectedRoute>
+                                    <RequireAdmin>
+                                        <DiscountManagementPage />
                                     </RequireAdmin>
                                 </ProtectedRoute>
                             }

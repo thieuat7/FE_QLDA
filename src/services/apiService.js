@@ -169,6 +169,56 @@ class ApiService {
         return response.data;
     }
 
+    // ============ PAYMENT HISTORY APIs ============
+
+    // Lấy lịch sử thanh toán (admin)
+    async getAdminPaymentHistory(params = {}) {
+        const {
+            page = 1,
+            limit = 20,
+            status = '',
+            paymentStatus = '',
+            searchTerm = '',
+            sortBy = '',
+            sortOrder = ''
+        } = params;
+        const response = await axiosInstance.get('/payment-history/admin', {
+            params: {
+                page,
+                limit,
+                status,
+                paymentStatus,
+                search: searchTerm,
+                sortBy,
+                sortOrder
+            }
+        });
+        return response.data;
+    }
+
+    // Lấy lịch sử thanh toán (người dùng hiện tại)
+    async getUserPaymentHistory(params = {}) {
+        const { page = 1, limit = 10, status = '', paymentStatus = '', searchTerm = '' } = params;
+        const response = await axiosInstance.get('/payment-history/user', {
+            params: {
+                page,
+                limit,
+                status,
+                paymentStatus,
+                search: searchTerm
+            }
+        });
+        return response.data;
+    }
+
+    // Xác nhận thanh toán cho đơn (admin)
+    async confirmOrderPayment(orderId) {
+        const response = await axiosInstance.put(`/admin/orders/${orderId}/payment-status`, {
+            paymentStatus: 'paid'
+        });
+        return response.data;
+    }
+
     // ============ HEALTH CHECK ============
 
     // Kiểm tra health

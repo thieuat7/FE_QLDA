@@ -60,10 +60,10 @@ const AdminLayout = ({ children }) => {
             active: location.pathname === '/admin/users'
         },
         {
-            path: '/admin/payments',
+            path: '/admin/payment-history',
             icon: <MdPayment />,
-            label: 'Xác Nhận Thanh Toán',
-            active: location.pathname === '/admin/payments'
+            label: 'Lịch Sử Thanh Toán',
+            active: location.pathname === '/admin/payment-history'
         }
     ];
 

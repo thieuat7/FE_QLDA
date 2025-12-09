@@ -1,0 +1,86 @@
+/* Basic styles for Admin Payment History Page */
+.admin-page-container {
+    padding: 20px;
+    background: #fff;
+}
+
+.admin-page-container h2 {
+    margin-bottom: 16px;
+}
+
+.filter-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    align-items: center;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    background: #fafafa;
+    border: 1px solid #eee;
+    border-radius: 6px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+
+.action-cell {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-view {
+    background: #1976d2;
+    color: #fff;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-confirm {
+    background: #2e7d32;
+    color: #fff;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-confirm:hover {
+    background: #276c2b;
+}
+
+.pagination-bar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 12px;
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 18px;
+    border-radius: 8px;
+    max-width: 720px;
+    width: 100%;
+}

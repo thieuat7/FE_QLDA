@@ -316,6 +316,37 @@ const OrderManagementPage = () => {
                                                         ✏️ Cập nhật
                                                     </button>
                                                 )}
+                                                {order.paymentStatus === 'pending' && (
+                                                    <button
+                                                        onClick={async () => {
+                                                            if (window.confirm('Xác nhận đơn này đã thanh toán?')) {
+                                                                try {
+                                                                    const token = localStorage.getItem('token');
+                                                                    const response = await fetch(`http://localhost:3000/api/admin/orders/${order.id}/payment-status`, {
+                                                                        method: 'PUT',
+                                                                        headers: {
+                                                                            'Content-Type': 'application/json',
+                                                                            'Authorization': `Bearer ${token}`
+                                                                        },
+                                                                        body: JSON.stringify({ paymentStatus: 'paid' })
+                                                                    });
+                                                                    const result = await response.json();
+                                                                    if (result.success) {
+                                                                        alert('Đã xác nhận thanh toán!');
+                                                                        fetchOrders();
+                                                                    } else {
+                                                                        alert(result.message || 'Lỗi xác nhận thanh toán');
+                                                                    }
+                                                                } catch (err) {
+                                                                    alert('Lỗi xác nhận thanh toán');
+                                                                }
+                                                            }
+                                                        }}
+                                                        className="btn-confirm-payment"
+                                                    >
+                                                        💸 Xác nhận thanh toán
+                                                    </button>
+                                                )}
                                             </td>
                                         </tr>
                                     ))}

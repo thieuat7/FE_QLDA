@@ -83,6 +83,9 @@ const Header = ({ categories = [], onCategoryFilter, onSearch }) => {
                                         <button onClick={() => { navigate('/orders'); setShowUserMenu(false); }}>
                                             📦 Đơn hàng của tôi
                                         </button>
+                                        <button onClick={() => { navigate('/payment-history'); setShowUserMenu(false); }}>
+                                            💳 Lịch Sử Thanh Toán
+                                        </button>
                                         <button onClick={handleLogout}>
                                             🚪 Đăng xuất
                                         </button>

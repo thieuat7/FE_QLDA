@@ -27,6 +27,8 @@ import OrderManagementPage from './pages/admin/OrderManagementPage';
 import DiscountManagementPage from './pages/admin/DiscountManagementPage';
 import UserManagementPage from './pages/admin/UserManagementPage';
 import './App.css';
+import AdminPaymentHistoryPage from './pages/admin/AdminPaymentHistoryPage';
+import PaymentHistoryPage from './pages/PaymentHistoryPage';
 
 function App() {
     return (
@@ -46,6 +48,16 @@ function App() {
                             element={
                                 <ProtectedRoute>
                                     <ProfilePage />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/admin/payment-history"
+                            element={
+                                <ProtectedRoute>
+                                    <RequireAdmin>
+                                        <AdminPaymentHistoryPage />
+                                    </RequireAdmin>
                                 </ProtectedRoute>
                             }
                         />
@@ -156,6 +168,14 @@ function App() {
                             element={
                                 <ProtectedRoute>
                                     <OrderDetailPage />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/payment-history"
+                            element={
+                                <ProtectedRoute>
+                                    <PaymentHistoryPage />
                                 </ProtectedRoute>
                             }
                         />

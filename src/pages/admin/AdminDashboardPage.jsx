@@ -13,7 +13,7 @@ import {
 import './AdminDashboardPage.css';
 
 // ✅ IMPORT SERVICE
-import orderService from '../services/orderService';
+import orderService from '../../services/orderService';
 
 // Register Chart.js components
 ChartJS.register(

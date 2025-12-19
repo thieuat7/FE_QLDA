@@ -206,7 +206,10 @@ const CheckoutPage = () => {
                 note: '',
                 items: orderItems,
                 totalAmount: getTotalPrice() - discountAmount,
-                typePayment: getTypePayment(formData.paymentMethod)
+                typePayment: getTypePayment(formData.paymentMethod),
+                // Nếu thanh toán qua cổng (VNPAY/MOMO), gửi flag để backend chỉ reserve/pend
+                // Backend nên không trừ tồn kho ngay khi nhận flag này.
+                reserveOnly: formData.paymentMethod === 'VNPAY' || formData.paymentMethod === 'MOMO'
             };
 
             console.log('=== DEBUG CHECKOUT ===');
@@ -242,12 +245,10 @@ const CheckoutPage = () => {
                 }
 
                 console.log('Payment URL:', paymentResponse.data.paymentUrl);
-                alert('Chuyển hướng đến VNPAY Sandbox (Test - không tốn tiền thật)');
 
-                // Redirect đến VNPAY Sandbox
+                // Redirect đến VNPAY Sandbox — không xóa giỏ hàng tại client.
+                // Backend nên giữ trạng thái đơn 'pending' và chỉ trừ tồn kho khi nhận webhook xác nhận.
                 window.location.href = paymentResponse.data.paymentUrl;
-
-                clearCart();
                 return;
             }
 
@@ -264,12 +265,9 @@ const CheckoutPage = () => {
                 }
 
                 console.log('MoMo Payment URL:', paymentResponse.data.paymentUrl);
-                alert('Chuyển hướng đến MoMo');
 
-                // Redirect đến MoMo
+                // Redirect đến MoMo — không xóa giỏ hàng tại client.
                 window.location.href = paymentResponse.data.paymentUrl;
-
-                clearCart();
                 return;
             }
 
@@ -653,7 +651,14 @@ const CheckoutPage = () => {
                                     </div>
                                     {discountAmount > 0 && (
                                         <div className="total-row discount">
-                                            <span>Giảm giá:</span>
+                                            <span>
+                                                Giảm giá:
+                                                {appliedDiscount && (
+                                                    <span style={{ color: '#6c63ff', fontWeight: 600, marginLeft: 6 }}>
+                                                        (Mã: <strong>{appliedDiscount.code}</strong>)
+                                                    </span>
+                                                )}
+                                            </span>
                                             <span>-{formatPrice(discountAmount)}</span>
                                         </div>
                                     )}

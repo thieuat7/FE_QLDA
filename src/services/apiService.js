@@ -29,17 +29,37 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {
+        // Kiểm tra nếu lỗi là 401 (Unauthorized) - Token hết hạn hoặc không hợp lệ
         if (error.response?.status === 401) {
-            // Token hết hạn hoặc không hợp lệ
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            window.location.href = '/login';
+            console.warn('Phát hiện lỗi 401 (Unauthorized). Đang gửi sự kiện auth-expired...');
+
+            window.dispatchEvent(new CustomEvent('auth-expired', {
+                detail: {
+                    status: 401,
+                    message: error.response?.data?.message || 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.'
+                }
+            }));
+
+            // Hãy để AuthContext hiện Modal lên cho người dùng chọn "Đăng nhập lại".
         }
+
+        // Vẫn trả về Promise.reject để component đang gọi API biết đường tắt Loading
         return Promise.reject(error);
     }
 );
 
 class ApiService {
+    // Lấy sản phẩm hot
+    async getHotProducts() {
+        const response = await axiosInstance.get('/products/hot');
+        return response.data;
+    }
+
+    // Lấy sản phẩm sale
+    async getSaleProducts() {
+        const response = await axiosInstance.get('/products/sale');
+        return response.data;
+    }
     // ============ AUTH APIs ============
 
     // Đăng ký tài khoản

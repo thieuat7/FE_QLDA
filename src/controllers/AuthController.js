@@ -1,32 +1,36 @@
 // Controller - Xử lý Authentication Logic
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AuthModel from '../models/AuthModel';
+import AuthModel from '../models/AuthModel'; // Chỉ dùng để validate form
 import apiService from '../services/apiService';
 import { useAuth } from '../contexts/AuthContext';
 
 const useAuthController = () => {
-    const [model] = useState(() => new AuthModel());
+    // Lấy state và hàm từ Context (Nguồn sự thật duy nhất)
+    const { login, logout, user, isAuthenticated } = useAuth();
+
+    // AuthModel ở đây chỉ dùng như một helper để validate, không dùng để lưu state
+    // Nếu method validate là static thì không cần new, nếu không thì new 1 lần
+    const [validationHelper] = useState(() => new AuthModel());
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
-    const { login: setAuthContext } = useAuth();
 
-    // Xử lý đăng ký
+    // Xử lý đăng ký (Giữ nguyên logic)
     const handleRegister = useCallback(async (formData, setFormErrors) => {
         try {
             setLoading(true);
             setError(null);
 
-            // Validate form ở client trước
-            const validationErrors = model.validateRegisterForm(formData);
+            // Validate form (Dùng helper)
+            const validationErrors = validationHelper.validateRegisterForm(formData);
             if (Object.keys(validationErrors).length > 0) {
                 setFormErrors(validationErrors);
                 setLoading(false);
                 return;
             }
 
-            // Gọi API đăng ký
             const response = await apiService.register({
                 username: formData.username,
                 email: formData.email,
@@ -37,105 +41,81 @@ const useAuthController = () => {
             });
 
             if (response.success) {
-                // Đăng ký thành công, chuyển đến trang login
                 alert('Đăng ký thành công! Vui lòng đăng nhập.');
-                setTimeout(() => {
-                    navigate('/login');
-                }, 500);
+                setTimeout(() => navigate('/login'), 500);
             }
 
         } catch (err) {
             console.error('Register error:', err);
-
-            // Xử lý lỗi từ backend
             if (err.response?.data) {
                 const backendError = err.response.data;
-
-                // Nếu có lỗi validation từ backend
-                if (backendError.errors) {
-                    setFormErrors(backendError.errors);
-                }
-
-                // Hiển thị message lỗi
+                if (backendError.errors) setFormErrors(backendError.errors);
                 setError(backendError.message || 'Đăng ký thất bại');
             } else {
-                setError('Không thể kết nối đến server. Vui lòng thử lại!');
+                setError('Không thể kết nối đến server.');
             }
         } finally {
             setLoading(false);
         }
-    }, [model, navigate]);
+    }, [validationHelper, navigate]);
 
-    // Xử lý đăng nhập
+    // Xử lý đăng nhập (SỬA LỚN)
     const handleLogin = useCallback(async (formData, setFormErrors) => {
         try {
             setLoading(true);
             setError(null);
 
-            // Validate form
-            const validationErrors = model.validateLoginForm(formData);
+            const validationErrors = validationHelper.validateLoginForm(formData);
             if (Object.keys(validationErrors).length > 0) {
                 setFormErrors(validationErrors);
                 setLoading(false);
                 return;
             }
 
-            // Gọi API đăng nhập
             const response = await apiService.login({
                 email: formData.email,
                 password: formData.password
             });
 
             if (response.success && response.data?.token) {
-                // Lưu token và user info vào localStorage
-                model.saveAuth(response.data.token, response.data.user);
+                // QUAN TRỌNG: Gọi hàm login của Context
+                // Context sẽ lo việc lưu vào LocalStorage và cập nhật State
+                login(response.data.token, response.data.user);
 
-                // Cập nhật AuthContext
-                setAuthContext(response.data.token, response.data.user);
-
-                // Kiểm tra role để redirect đúng trang
+                // Logic Redirect
                 const userRole = response.data.user?.role;
-                const isAdmin = userRole === 'admin' || userRole === 1 || userRole === '1';
+                // Check role linh hoạt hơn (string hoặc number)
+                const isAdmin = userRole === 'admin' || userRole == 1;
 
                 let redirectTo;
                 if (isAdmin) {
-                    // Admin -> redirect đến dashboard
                     redirectTo = '/admin/dashboard';
                 } else {
-                    // User thường -> redirect đến trang chủ hoặc trang trước đó
                     redirectTo = sessionStorage.getItem('redirectAfterLogin') || '/';
                     sessionStorage.removeItem('redirectAfterLogin');
                 }
 
-                // Navigate ngay lập tức
                 navigate(redirectTo);
             }
 
         } catch (err) {
             console.error('Login error:', err);
-
-            // Xử lý lỗi từ backend
             if (err.response?.data) {
-                const backendError = err.response.data;
-                setError(backendError.message || 'Đăng nhập thất bại');
+                setError(err.response.data.message || 'Đăng nhập thất bại');
             } else {
-                setError('Không thể kết nối đến server. Vui lòng thử lại!');
+                setError('Lỗi kết nối server.');
             }
         } finally {
             setLoading(false);
         }
-    }, [model, navigate, setAuthContext]);
+    }, [validationHelper, navigate, login]); // Dependency là login từ context
 
-    // Xử lý đăng xuất
+    // Xử lý đăng xuất (SỬA LỚN)
     const handleLogout = useCallback(() => {
-        model.clearAuth();
+        // Gọi logout của Context để clear State toàn app
+        logout();
         navigate('/login');
-    }, [model, navigate]);
-
-    // Kiểm tra trạng thái đăng nhập
-    const checkAuth = useCallback(() => {
-        return model.loadAuth();
-    }, [model]);
+    }, [logout, navigate]);
 
     return {
         loading,
@@ -143,9 +123,9 @@ const useAuthController = () => {
         handleRegister,
         handleLogin,
         handleLogout,
-        checkAuth,
-        isLoggedIn: model.isLoggedIn(),
-        currentUser: model.getUser()
+        // Trả về state trực tiếp từ Context, đảm bảo tính reactive
+        isLoggedIn: isAuthenticated,
+        currentUser: user
     };
 };
 

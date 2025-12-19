@@ -308,11 +308,6 @@ const ProfilePage = () => {
                                 </div>
                             )}
                         </div>
-                        <div className="profile-actions">
-                            <button onClick={() => navigate('/payment-history')} className="btn btn-secondary" style={{ marginTop: 10 }}>
-                                💳 Lịch Sử Thanh Toán
-                            </button>
-                        </div>
                         <h3>{authUser?.fullName || authUser?.username}</h3>
                         <p>{authUser?.email}</p>
                         {authUser?.googleId && (

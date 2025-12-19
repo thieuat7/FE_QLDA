@@ -1,6 +1,6 @@
-// Component - Product Card
+// ProductCard.js
 import { useNavigate } from 'react-router-dom';
-import { formatPrice, calculateDiscount } from '../utils/formatters';
+import { formatPrice } from '../utils/formatters';
 import { getImageUrl, handleImageError } from '../utils/imageHelper';
 import './ProductCard.css';
 
@@ -11,54 +11,90 @@ const ProductCard = ({ product }) => {
         navigate(`/product/${product.id}`);
     };
 
-    const hasDiscount = product.priceSale && product.priceSale < product.price;
-    const discountPercent = hasDiscount ? calculateDiscount(product.price, product.priceSale) : 0;
+    const showFlashVoucher = true; // Logic giả lập
+
+    // Logic xác định
+    const isHot = product.isHot || product.category_id === 'hot';
+    const isSale = product.isSale === true;
+
+    // Tính phần trăm giảm giá giả định (nếu có dữ liệu thật thì thay vào)
+    const discountPercent = isSale ? Math.round(((product.price - product.priceSale) / product.price) * 100) : 0;
 
     return (
         <div className="product-card" onClick={handleClick}>
-            {/* Hot Badge */}
-            {product.isHot && (
-                <span className="badge badge-hot">🔥 Hot</span>
-            )}
-
-            {/* Discount Badge */}
-            {hasDiscount && discountPercent > 0 && (
-                <span className="badge badge-discount">-{discountPercent}%</span>
-            )}
-
-            {/* Image */}
-            <div className="product-image">
+            {/* --- PHẦN ẢNH --- */}
+            <div className="product-image-wrapper">
                 <img
                     src={getImageUrl(product.image)}
                     alt={product.title}
                     onError={handleImageError}
                 />
-            </div>
 
-            {/* Info */}
-            <div className="product-info">
-                <h3 className="product-title">{product.title}</h3>
-                <p className="product-category">{product.category?.title || 'Chưa phân loại'}</p>
+                {/* Badge MALL/Yêu thích (Giả lập icon góc trái trên như hình mẫu) */}
+                <div className="badge-left-top">
+                    <span className="badge-mall">Mall</span>
+                </div>
 
-                {/* Price */}
-                <div className="product-price">
-                    {hasDiscount ? (
-                        <>
-                            <span className="price-sale">{formatPrice(product.priceSale)}</span>
-                            <span className="price-original">{formatPrice(product.price)}</span>
-                        </>
-                    ) : (
-                        <span className="price">{formatPrice(product.price)}</span>
+                {/* Badge SALE/HOT (Góc phải trên - To và Rõ hơn) */}
+                <div className="badge-right-group">
+                    {isSale && (
+                        <div className="badge-sticker sale">
+                            <span className="percent">{discountPercent}%</span>
+                            <span className="label">GIẢM</span>
+                        </div>
+                    )}
+                    {/* Nếu không Sale mà là Hot thì hiện Hot */}
+                    {!isSale && isHot && (
+                        <div className="badge-sticker hot">
+                            <span className="label">HOT</span>
+                        </div>
                     )}
                 </div>
 
-                {/* Stock Status */}
-                <div className="product-stock">
-                    {product.quantity > 0 ? (
-                        <span className="in-stock">✓ Còn hàng</span>
+                {/* Flash Voucher (Giữ nguyên của bạn vì nó khá đẹp rồi) */}
+                {showFlashVoucher && (
+                    <div className="flash-voucher-badge">
+                        <div className="voucher-main">
+                            <span>FLASH VOUCHER</span>
+                            120K
+                        </div>
+                        <div className="voucher-subs">
+                            <span className="sub-tag">12K</span>
+                            <span className="sub-tag">20K</span>
+                            <span className="sub-tag">50K</span>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* --- PHẦN THÔNG TIN --- */}
+            <div className="product-info">
+                <h3 className="product-title">{product.title}</h3>
+
+                {/* Tags row: Làm đẹp lại các tag nhỏ */}
+                <div className="tags-row">
+                    {isHot && <span className="tag tag-hot">🔥 Bán chạy</span>}
+                    {isSale && <span className="tag tag-sale">Đang giảm giá</span>}
+                    <span className="tag tag-ship">Freeship</span>
+                </div>
+
+                <div className="price-row">
+                    {isSale ? (
+                        <>
+                            <div className="price-group">
+                                <span className="price-original">{formatPrice(product.price)}</span>
+                                <span className="price-sale">{formatPrice(product.priceSale)}</span>
+                            </div>
+                        </>
                     ) : (
-                        <span className="out-stock">✗ Hết hàng</span>
+                        <span className="price-text">{formatPrice(product.price)}</span>
                     )}
+
+                    <button className="cart-icon-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                    </button>
                 </div>
             </div>
         </div>

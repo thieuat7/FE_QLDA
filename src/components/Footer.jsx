@@ -9,7 +9,7 @@ const Footer = () => {
                     <div className="footer-grid">
                         {/* About Section */}
                         <div className="footer-col">
-                            <h3 className="footer-title">🛍️ I6O STORE</h3>
+                            <h3 className="footer-title">BaByShark STORE</h3>
                             <p className="footer-desc">
                                 Thời trang cao cấp, phong cách trẻ trung, năng động.
                                 Chất lượng đảm bảo, giá cả hợp lý.
@@ -67,41 +67,6 @@ const Footer = () => {
                                     <span>8:00 - 22:00 (Tất cả các ngày)</span>
                                 </li>
                             </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Payment Methods */}
-            <div className="footer-payment">
-                <div className="container">
-                    <div className="payment-section">
-                        <div className="payment-title">Phương thức thanh toán</div>
-                        <div className="payment-icons">
-                            <span className="payment-icon">💳 Visa</span>
-                            <span className="payment-icon">💳 MasterCard</span>
-                            <span className="payment-icon">💰 COD</span>
-                            <span className="payment-icon">🏦 Chuyển khoản</span>
-                            <span className="payment-icon">📱 MoMo</span>
-                            <span className="payment-icon">📱 ZaloPay</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Footer Bottom */}
-            <div className="footer-bottom">
-                <div className="container">
-                    <div className="footer-bottom-content">
-                        <p className="copyright">
-                            © 2024 I6O Store. All rights reserved. Designed with ❤️ by Development Team
-                        </p>
-                        <div className="footer-bottom-links">
-                            <a href="#">Điều khoản sử dụng</a>
-                            <span>|</span>
-                            <a href="#">Chính sách bảo mật</a>
-                            <span>|</span>
-                            <a href="#">Sitemap</a>
                         </div>
                     </div>
                 </div>

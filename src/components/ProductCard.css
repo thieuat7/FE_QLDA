@@ -1,138 +1,274 @@
-/* Product Card Styles */
+/* ProductCard.css */
+
 .product-card {
     background: white;
-    border-radius: 12px;
+    border-radius: 4px;
+    /* Giống Shopee/Lazada */
     overflow: hidden;
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    position: relative;
-    height: 100%;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    /* Chuẩn bị cho hover */
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 .product-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    border-color: #ee4d2d;
+    /* Viền cam khi hover */
+    transform: translateY(-1px);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
 }
 
-.product-image {
+/* --- PHẦN ẢNH --- */
+.product-image-wrapper {
     width: 100%;
-    height: 250px;
-    overflow: hidden;
-    background: #f5f5f5;
+    aspect-ratio: 1 / 1;
     position: relative;
+    background: #f4f4f4;
 }
 
-.product-image img {
+.product-image-wrapper img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
 }
 
-.product-card:hover .product-image img {
-    transform: scale(1.05);
-}
-
-.badge {
+/* 1. Badge MALL (Góc trái trên) */
+.badge-left-top {
     position: absolute;
-    top: 10px;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 12px;
+    top: 0;
+    left: 0;
+    z-index: 2;
+}
+
+.badge-mall {
+    background-color: #d0011b;
+    /* Màu đỏ Mall */
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-bottom-right-radius: 4px;
+    text-transform: uppercase;
+}
+
+/* 2. Badge Sticker SALE/HOT (Góc phải trên - Quan trọng) */
+.badge-right-group {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 2;
+}
+
+.badge-sticker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 40px;
+    /* Hình dáng thẻ treo */
+    font-size: 0.7rem;
+    font-weight: 700;
+    line-height: 1.1;
+    position: relative;
+}
+
+/* Tạo hình đuôi nheo cho badge */
+.badge-sticker::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    border-width: 0 18px 4px;
+    border-style: solid;
+    width: 0;
+}
+
+/* Style cho SALE (Vàng) */
+.badge-sticker.sale {
+    background-color: #ffd840;
+    /* Vàng nổi */
+    color: #eb2608;
+    /* Chữ đỏ */
+}
+
+.badge-sticker.sale::after {
+    border-color: transparent #ffd840 transparent #ffd840;
+}
+
+/* Style cho HOT (Cam đỏ) */
+.badge-sticker.hot {
+    background-color: #ee4d2d;
+    color: white;
+    width: 32px;
+    /* Hot nhỏ hơn xíu */
+    height: 36px;
+}
+
+.badge-sticker.hot::after {
+    border-color: transparent #ee4d2d transparent #ee4d2d;
+}
+
+.badge-sticker .percent {
+    font-size: 0.8rem;
+    font-weight: 800;
+}
+
+.badge-sticker .label {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+}
+
+/* Giữ nguyên Flash Voucher của bạn */
+.flash-voucher-badge {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* ... (Code Flash Voucher cũ của bạn giữ nguyên ở đây) ... */
+.voucher-main {
+    background: #ffcc00;
+    color: #000;
+    font-weight: 800;
+    font-size: 1rem;
+    padding: 4px 8px;
+    line-height: 1;
+    display: flex;
+    flex-direction: column;
+    clip-path: polygon(0 0, 100% 0, 92% 100%, 0% 100%);
+}
+
+.voucher-main span {
+    font-size: 0.5rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.voucher-subs {
+    display: flex;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 2px 2px 2px 0;
+}
+
+.sub-tag {
+    background: #ffcc00;
+    color: #000;
+    font-size: 0.6rem;
     font-weight: bold;
-    z-index: 1;
+    padding: 2px 4px;
+    margin-left: 2px;
+    border-radius: 1px;
 }
 
-.badge-hot {
-    right: 10px;
-    background: #ff4757;
-    color: white;
-}
 
-.badge-discount {
-    left: 10px;
-    background: #ffa502;
-    color: white;
-}
-
+/* --- PHẦN THÔNG TIN --- */
 .product-info {
-    padding: 16px;
-    flex: 1;
+    padding: 8px;
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
 }
 
 .product-title {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 8px;
-    color: #2c3e50;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: #333;
+    margin: 0 0 4px 0;
     display: -webkit-box;
     -webkit-line-clamp: 2;
-    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    min-height: 48px;
+    line-height: 1.4;
+    min-height: 2.4em;
 }
 
-.product-category {
-    font-size: 12px;
-    color: #999;
-    margin-bottom: 12px;
+/* TAGS ROW (Dưới tên) */
+.tags-row {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
 }
 
-.product-price {
-    margin-bottom: 12px;
+.tag {
+    font-size: 0.6rem;
+    padding: 1px 4px;
+    border-radius: 2px;
+    border: 1px solid;
+    white-space: nowrap;
+}
+
+.tag-hot {
+    color: #ee4d2d;
+    border-color: #ee4d2d;
+    background: #fff0f0;
+}
+
+.tag-sale {
+    color: #ee4d2d;
+    border-color: #ee4d2d;
+}
+
+.tag-ship {
+    color: #00bfa5;
+    border-color: #00bfa5;
+}
+
+/* PRICE ROW */
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
     margin-top: auto;
 }
 
-.price-sale {
-    font-size: 18px;
-    font-weight: bold;
-    color: #ff4757;
-    margin-right: 8px;
+.price-group {
+    display: flex;
+    flex-direction: column;
+    /* Xếp giá cũ lên trên giá mới */
+    line-height: 1.2;
 }
 
 .price-original {
-    font-size: 14px;
-    color: #999;
+    font-size: 0.75rem;
     text-decoration: line-through;
+    color: #999;
 }
 
-.price {
-    font-size: 18px;
-    font-weight: bold;
-    color: #667eea;
+.price-sale,
+.price-text {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #ee4d2d;
+    /* Màu cam Shopee */
 }
 
-.product-stock {
-    font-size: 13px;
-    font-weight: 500;
+.cart-icon-btn {
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ee4d2d;
+    cursor: pointer;
+    padding: 0;
 }
 
-.in-stock {
-    color: #2ecc71;
-}
-
-.out-stock {
-    color: #e74c3c;
-}
-
-@media (max-width: 768px) {
-    .product-image {
-        height: 180px;
-    }
-
-    .product-title {
-        font-size: 14px;
-        min-height: 40px;
-    }
-
-    .price-sale,
-    .price {
-        font-size: 16px;
-    }
+.cart-icon-btn:hover {
+    background: #ee4d2d;
+    color: white;
+    border-color: #ee4d2d;
 }

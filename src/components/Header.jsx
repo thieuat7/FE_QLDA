@@ -1,90 +1,160 @@
-// Header Component - Tái sử dụng cho toàn bộ website
-import { useState } from 'react';
+// Header.jsx
+import { useState, useEffect, useRef } from 'react';
+import apiService from '../services/apiService';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { getAvatarUrl } from '../utils/avatarHelper';
 import './Header.css';
 
-const Header = ({ categories = [], onCategoryFilter, onSearch }) => {
+const Header = ({ onCategoryFilter, onSearch }) => {
+    // --- GIỮ NGUYÊN TOÀN BỘ LOGIC CŨ ---
     const { user, logout } = useAuth();
     const { getTotalItems } = useCart();
     const navigate = useNavigate();
+    const location = useLocation(); // Thêm location để xử lý active menu nếu cần
+
     const [searchQuery, setSearchQuery] = useState('');
     const [showUserMenu, setShowUserMenu] = useState(false);
+    const [categories, setCategories] = useState([]);
+
+    // Logic Slider (nếu bạn vẫn muốn giữ logic này dù không hiển thị ở đây)
+    const [currentSlide, setCurrentSlide] = useState(0);
+    const sliderRef = useRef(null);
+
+    useEffect(() => {
+        const loadCategories = async () => {
+            try {
+                const response = await apiService.getCategories();
+                if (response.success) {
+                    setCategories(response.data.categories);
+                }
+            } catch (error) {
+                console.error('Load categories error:', error);
+            }
+        };
+        loadCategories();
+    }, []);
 
     const cartItemCount = getTotalItems();
+
+    // Kiểm tra quyền admin (backend có thể trả về 'admin' hoặc 1)
+    const isAdmin = user?.role === 'admin' || user?.role === 1 || user?.role === '1';
 
     const handleLogout = () => {
         logout();
         navigate('/login');
     };
 
+    // CODE MỚI (SỬA LẠI)
     const handleSearch = (e) => {
         e.preventDefault();
-        if (searchQuery.trim() && onSearch) {
-            onSearch(searchQuery);
+
+        const q = searchQuery.trim();
+        // If parent provided a handler (homepage), use it.
+        if (typeof onSearch === 'function') {
+            onSearch(q);
+            return;
+        }
+
+        // Otherwise navigate to tin-tuc with query param so TinTucPage can handle it.
+        if (q) {
+            navigate(`/tin-tuc?q=${encodeURIComponent(q)}`);
+        } else {
+            navigate('/tin-tuc');
         }
     };
 
+    // Truyền thêm loại filter đặc biệt (hot/sale)
+    const handleCategoryFilter = (categoryId, type) => {
+        if (type === 'hot') {
+            onCategoryFilter?.('hot');
+        } else if (type === 'sale') {
+            onCategoryFilter?.('sale');
+        } else {
+            onCategoryFilter?.(categoryId);
+        }
+        // Nếu đang ở trang con, quay về trang chủ
+        if (location.pathname !== '/') navigate('/');
+    };
+
+    // --- PHẦN GIAO DIỆN ĐÃ ĐƯỢC CẤU TRÚC LẠI ---
+    // Hàm xử lý khi nhấn vào logo: reset filter về mặc định
+    const handleLogoClick = () => {
+        setSearchQuery('');
+        onCategoryFilter?.(null); // reset về tất cả sản phẩm
+        navigate('/');
+    };
+
     return (
-        <>
-            {/* Main Header */}
-            <header className="main-header">
+        <div className="app-header-wrapper">
+            {/* KHỐI 1: TOP HEADER (MÀU ĐEN) */}
+            <div className="top-bar-black">
                 <div className="container">
                     <div className="header-content">
                         {/* Logo */}
-                        <div className="logo-section">
-                            <h1 className="store-logo" onClick={() => navigate('/')}>
-                                🛍️ I6O STORE
-                            </h1>
-                            <p className="store-tagline">Fashion & Lifestyle</p>
+                        <div className="logo-section" onClick={handleLogoClick}>
+                            <h1 className="store-logo">BABYSHARk</h1>
                         </div>
 
-                        {/* Search Bar */}
                         <div className="search-section">
                             <form onSubmit={handleSearch} className="search-form">
-                                <input
-                                    type="text"
-                                    placeholder="Bạn đang tìm gì..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="search-input"
-                                />
-                                <button type="submit" className="search-btn">
-                                    🔍
-                                </button>
+                                <div className="search-wrapper">
+                                    <input
+                                        type="text"
+                                        placeholder="Bạn đang tìm gì..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="search-input"
+                                    />
+
+                                    <button type="submit" className="search-btn-inside">
+                                        🔍
+                                    </button>
+                                </div>
                             </form>
                         </div>
 
-                        {/* User Actions */}
+
+                        {/* Actions: Cửa hàng, User, Giỏ hàng */}
                         <div className="header-actions">
-                            <button className="action-btn" onClick={() => navigate('/')}>
-                                <span className="icon">🏪</span>
-                                <span className="text">Cửa hàng</span>
-                            </button>
+
+
+                            {/* Nút 'Quay về Admin' sẽ hiển thị trong dropdown user (nếu là admin) */}
+
                             <div className="user-menu-wrapper">
                                 <button
                                     className="action-btn user-btn"
                                     onClick={() => setShowUserMenu(!showUserMenu)}
                                 >
-                                    <img
-                                        src={getAvatarUrl(user?.avatar)}
-                                        alt="Avatar"
-                                        className="user-avatar-small"
-                                    />
-                                    <span className="text">{user?.fullName || user?.username}</span>
+                                    {/* Logic hiển thị Avatar hoặc Icon mặc định */}
+                                    {user?.avatar ? (
+                                        <img
+                                            src={getAvatarUrl(user?.avatar)}
+                                            alt="Avatar"
+                                            className="user-avatar-small"
+                                        />
+                                    ) : (
+                                        <span className="icon">👤</span>
+                                    )}
+                                    <span className="text">{user?.fullName || user?.username || 'Tài khoản'}</span>
                                 </button>
+
                                 {showUserMenu && (
                                     <div className="user-dropdown">
+                                        {isAdmin && (
+                                            <button onClick={() => { navigate('/admin/dashboard'); setShowUserMenu(false); }}>
+                                                Trang Quản Trị
+                                            </button>
+                                        )}
                                         <button onClick={() => { navigate('/profile'); setShowUserMenu(false); }}>
-                                            👤 Tài khoản
+                                            👤 Hồ sơ của tôi
                                         </button>
                                         <button onClick={() => { navigate('/orders'); setShowUserMenu(false); }}>
-                                            📦 Đơn hàng của tôi
+                                            📦 Đơn hàng
                                         </button>
                                         <button onClick={() => { navigate('/payment-history'); setShowUserMenu(false); }}>
-                                            💳 Lịch Sử Thanh Toán
+                                            💳 Lịch sử thanh toán
                                         </button>
                                         <button onClick={handleLogout}>
                                             🚪 Đăng xuất
@@ -92,6 +162,7 @@ const Header = ({ categories = [], onCategoryFilter, onSearch }) => {
                                     </div>
                                 )}
                             </div>
+
                             <button className="action-btn cart-btn" onClick={() => navigate('/cart')}>
                                 <span className="icon">🛒</span>
                                 <span className="text">Giỏ hàng</span>
@@ -102,37 +173,43 @@ const Header = ({ categories = [], onCategoryFilter, onSearch }) => {
                         </div>
                     </div>
                 </div>
-            </header>
+            </div>
 
-            {/* Navigation Menu */}
-            <nav className="main-nav">
+            {/* KHỐI 2: NAVIGATION MENU (MÀU TRẮNG - DÍNH LIỀN KHỐI TRÊN) */}
+            <nav className="nav-bar-white">
                 <div className="container">
                     <ul className="nav-menu">
-                        <li className="nav-item active">
-                            <a href="#" onClick={(e) => { e.preventDefault(); onCategoryFilter?.('all'); }}>
-                                🏠 TRANG CHỦ
+                        {/* Nút Sản Phẩm Hot */}
+                        <li className="nav-item highlight">
+                            <a href="#" onClick={(e) => { e.preventDefault(); handleCategoryFilter(null, 'hot'); }}>
+                                Sản Phẩm <span className="badge-new">Hot</span>
                             </a>
                         </li>
-                        <li className="nav-item">
-                            <a href="#">🎁 HÀNG MỚI <span className="badge-new">NEW</span></a>
-                        </li>
+
+
+                        {/* Render Danh mục từ API */}
                         {categories.slice(0, 5).map((cat) => (
                             <li key={cat.id} className="nav-item">
-                                <a href="#" onClick={(e) => { e.preventDefault(); onCategoryFilter?.(cat.id); }}>
+                                <a href="#" onClick={(e) => { e.preventDefault(); handleCategoryFilter(cat.id); }}>
                                     {cat.icon} {cat.title.toUpperCase()}
                                 </a>
                             </li>
                         ))}
+
+                        {/* Nút Sale */}
                         <li className="nav-item sale">
-                            <a href="#">🔥 SALE <span className="badge-sale">-50%</span></a>
+                            <a href="#" onClick={(e) => { e.preventDefault(); handleCategoryFilter(null, 'sale'); }}>
+                                🔥 SALE 12.12 <span className="badge-sale">-50%</span>
+                            </a>
                         </li>
+
                         <li className="nav-item">
-                            <a href="#">📰 TIN THỜI TRANG</a>
+                            <a href="#" onClick={(e) => { e.preventDefault(); navigate('/tin-tuc'); }}>TIN THỜI TRANG</a>
                         </li>
                     </ul>
                 </div>
             </nav>
-        </>
+        </div>
     );
 };
 

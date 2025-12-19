@@ -4,10 +4,12 @@ import { useSearchParams } from 'react-router-dom';
 import apiService from '../services/apiService';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import IncompleteProfileBanner from '../components/IncompleteProfileBanner';
+import FloatingProfileNotice from '../components/FloatingProfileNotice';
 import ProductCard from '../components/ProductCard';
 import Pagination from '../components/Pagination';
 import './HomePage.css';
+import imgbaner1 from '../assets/banners/sanphamhot.jpg';
+import imgbaner2 from '../assets/banners/sieusale.jpg';
 
 const HomePage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -23,6 +25,7 @@ const HomePage = () => {
         category_id: null,
         sort: null
     });
+    const [forceReload, setForceReload] = useState(0);
     const [currentSlide, setCurrentSlide] = useState(0);
     const sliderRef = useRef(null);
 
@@ -30,25 +33,14 @@ const HomePage = () => {
     const bannerSlides = [
         {
             id: 1,
-            title: 'HÀNG MỚI VỀ',
-            subtitle: 'COLLECTION MÙA THU ĐÔNG 2024',
             bgColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            image: '/banner1.jpg'
+            image: imgbaner1
         },
         {
             id: 2,
-            title: 'SALE UP TO 50%',
-            subtitle: 'ƯU ĐÃI KHỦNG CHO MỌI SẢN PHẨM',
             bgColor: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-            image: '/banner2.jpg'
+            image: imgbaner2
         },
-        {
-            id: 3,
-            title: 'NEW ARRIVALS',
-            subtitle: 'XU HƯỚNG THỜI TRANG MỚI NHẤT',
-            bgColor: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-            image: '/banner3.jpg'
-        }
     ];
 
     // Load categories khi component mount
@@ -60,7 +52,7 @@ const HomePage = () => {
     useEffect(() => {
         loadProducts();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [filters]);
+    }, [filters, forceReload]);
 
     // Auto slide banner
     useEffect(() => {
@@ -94,10 +86,27 @@ const HomePage = () => {
     const loadProducts = async () => {
         try {
             setLoading(true);
-            const response = await apiService.getProducts(filters);
-            if (response.success) {
+            let response;
+            // Nếu filter là hot hoặc sale thì gọi API riêng
+            if (filters.category_id === 'hot') {
+                response = await apiService.getHotProducts?.();
+            } else if (filters.category_id === 'sale') {
+                response = await apiService.getSaleProducts?.();
+            } else {
+                response = await apiService.getProducts(filters);
+            }
+            if (response && response.success) {
                 setProducts(response.data.products);
-                setPagination(response.data.pagination);
+                // Nếu không có pagination, tạo object mặc định
+                if (response.data.pagination) {
+                    setPagination(response.data.pagination);
+                } else {
+                    setPagination({
+                        totalProducts: response.data.products?.length || 0,
+                        currentPage: 1,
+                        totalPages: 1
+                    });
+                }
             }
         } catch (error) {
             console.error('Load products error:', error);
@@ -133,8 +142,45 @@ const HomePage = () => {
     };
 
     const handleSearch = (searchQuery) => {
-        // TODO: Implement search
-        console.log('Searching for:', searchQuery);
+        if (!searchQuery || searchQuery.trim() === "") {
+            // 1. Reset state filters
+            setFilters({
+                page: 1,
+                limit: 12,
+                category_id: null,
+                sort: null
+            });
+
+            // 2. QUAN TRỌNG: Xóa luôn params trên URL để tránh useEffect tự động load lại category cũ
+            setSearchParams({});
+
+            // 3. Force reload để gọi lại API
+            setForceReload(prev => prev + 1);
+            return;
+        }
+        // Tìm kiếm sản phẩm qua API
+        setLoading(true);
+        apiService.searchProducts(searchQuery)
+            .then((response) => {
+                if (response.success) {
+                    setProducts(response.data.products);
+                    setPagination({
+                        totalProducts: response.data.products?.length || 0,
+                        currentPage: 1,
+                        totalPages: 1
+                    });
+                } else {
+                    setProducts([]);
+                    setPagination({ totalProducts: 0, currentPage: 1, totalPages: 1 });
+                }
+            })
+            .catch((error) => {
+                setProducts([]);
+                setPagination({ totalProducts: 0, currentPage: 1, totalPages: 1 });
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     };
 
     const nextSlide = () => {
@@ -149,13 +195,12 @@ const HomePage = () => {
         <div className="homepage-modern">
             {/* Header Component */}
             <Header
-                categories={categories}
                 onCategoryFilter={handleCategoryFilter}
                 onSearch={handleSearch}
             />
 
             {/* Profile Completion Banner */}
-            <IncompleteProfileBanner />
+            <FloatingProfileNotice />
 
             {/* Hero Banner Slider */}
             <section className="hero-banner">
@@ -164,14 +209,30 @@ const HomePage = () => {
                         <div
                             key={slide.id}
                             className={`slide ${index === currentSlide ? 'active' : ''}`}
-                            style={{ background: slide.bgColor }}
+                            style={{ backgroundImage: `url(${slide.image})` }}
+                            onClick={(e) => e.stopPropagation()} // chặn click trên toàn bộ banner
                         >
                             <div className="container">
                                 <div className="slide-content">
                                     <div className="slide-text">
                                         <h2 className="slide-title">{slide.title}</h2>
                                         <p className="slide-subtitle">{slide.subtitle}</p>
-                                        <button className="shop-now-btn">
+                                        <button
+                                            className="shop-now-btn"
+                                            onClick={(e) => {
+                                                e.stopPropagation(); // đảm bảo chỉ nút này xử lý click
+                                                // Banner 1 -> hot, Banner 2 -> sale
+                                                if (index === 0) handleCategoryFilter('hot');
+                                                else if (index === 1) handleCategoryFilter('sale');
+                                                else handleCategoryFilter('all');
+                                                // Scroll to products
+                                                setTimeout(() => {
+                                                    const el = document.querySelector('.products-section');
+                                                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                                                    else window.scrollTo({ top: 600, behavior: 'smooth' });
+                                                }, 100);
+                                            }}
+                                        >
                                             XEM NGAY →
                                         </button>
                                     </div>
@@ -204,7 +265,6 @@ const HomePage = () => {
             {/* Products Section */}
             <section className="products-section">
                 <div className="container">
-                    <h2 className="section-title">🛍️ Sản phẩm</h2>
 
                     {/* Filters Bar */}
                     <div className="filters-bar">
@@ -235,7 +295,7 @@ const HomePage = () => {
                             </select>
                         </div>
 
-                        {pagination.totalProducts > 0 && (
+                        {pagination && pagination.totalProducts > 0 && (
                             <div className="results-info">
                                 Tìm thấy <strong>{pagination.totalProducts}</strong> sản phẩm
                             </div>

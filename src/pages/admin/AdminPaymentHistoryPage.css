@@ -79,8 +79,70 @@
 
 .modal-content {
     background: #fff;
-    padding: 18px;
-    border-radius: 8px;
-    max-width: 720px;
+    padding: 32px 28px 24px 28px;
+    border-radius: 14px;
+    max-width: 520px;
     width: 100%;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18), 0 1.5px 6px rgba(25, 118, 210, 0.08);
+    position: relative;
+    animation: modalFadeIn 0.25s cubic-bezier(.4, 0, .2, 1);
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 18px;
+    font-size: 1.35rem;
+    color: #1976d2;
+    font-weight: 600;
+}
+
+.modal-content p,
+.modal-content ul {
+    margin: 8px 0;
+    font-size: 1.05rem;
+    color: #222;
+}
+
+.modal-content ul {
+    padding-left: 18px;
+    margin-bottom: 16px;
+}
+
+.modal-content li {
+    margin-bottom: 4px;
+    font-size: 1rem;
+}
+
+.modal-content button {
+    margin-top: 18px;
+    background: #1976d2;
+    color: #fff;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.18s;
+}
+
+.modal-content button:hover {
+    background: #1251a3;
+}
+
+.modal-content hr {
+    border: none;
+    border-top: 1px solid #e0e0e0;
+    margin: 16px 0;
 }

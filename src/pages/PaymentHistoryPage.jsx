@@ -13,7 +13,7 @@ const AdminPaymentHistoryPage = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [status, setStatus] = useState('');
     const [paymentStatus, setPaymentStatus] = useState('');
-    const [sortBy, setSortBy] = useState('createdAt');
+    const [sortBy] = useState('createdAt');
     const [sortOrder, setSortOrder] = useState('DESC');
     
     const [selectedOrder, setSelectedOrder] = useState(null);

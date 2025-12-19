@@ -6,7 +6,7 @@ const axiosClient = axios.create({
     // Logic quan trọng:
     // - Nếu có biến môi trường (trên Render) -> dùng link Render
     // - Nếu không (ở dưới máy local) -> fallback về localhost hoặc dùng proxy cũ
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
+    baseURL: import.meta.env.VITE_API_URL || 'https://be-qlda.onrender.com/api',
     
     headers: {
         'Content-Type': 'application/json',

@@ -42,7 +42,7 @@ export const sanitizeFilename = (filename) => {
 export const getAvatarUrl = (avatarPath) => {
     if (!avatarPath) {
         // Nếu không có avatar, dùng default avatar từ backend
-        return 'http://localhost:3000/Uploads/default-avatar.png';
+        return 'https://be-qlda.onrender.com//Uploads/default-avatar.png';
     }
 
     // Nếu đã là URL đầy đủ (http/https), trả về luôn
@@ -52,7 +52,7 @@ export const getAvatarUrl = (avatarPath) => {
 
     // Nếu là path từ backend (/Uploads/avatar-xxx.jpg), thêm base URL
     // Backend đã sanitize filename nên không cần encode
-    return `http://localhost:3000${avatarPath}`;
+    return `https://be-qlda.onrender.com${avatarPath}`;
 };
 
 // Component helper để hiển thị avatar

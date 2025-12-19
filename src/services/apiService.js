@@ -6,7 +6,7 @@ import axios from 'axios';
 // 1. Nếu trên Render: Nó sẽ lấy link từ biến môi trường VITE_API_URL
 // 2. Nếu dưới Local: Nó sẽ lấy http://localhost:3000/api (hoặc link bạn muốn)
 // -----------------------------------------------------------------------------
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://be-qlda.onrender.com/api';
 
 console.log('Current API URL:', API_URL); // Log ra để kiểm tra đang chạy môi trường nào
 

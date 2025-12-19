@@ -116,7 +116,7 @@ const LoginView = ({ onLogin, loading, error }) => {
                 <button
                     type="button"
                     className="btn btn-google"
-                    onClick={() => window.location.href = 'http://localhost:3000/api/auth/google'}
+                    onClick={() => window.location.href = 'https://be-qlda.onrender.com/api/auth/google'}
                     disabled={loading}
                 >
                     <img
@@ -130,7 +130,7 @@ const LoginView = ({ onLogin, loading, error }) => {
                 <button
                     type="button"
                     className="btn btn-facebook"
-                    onClick={() => window.location.href = 'http://localhost:3000/api/auth/facebook'}
+                    onClick={() => window.location.href = 'https://be-qlda.onrender.com/api/auth/facebook'}
                     disabled={loading}
                     style={{ marginTop: '0.75rem' }}
                 >

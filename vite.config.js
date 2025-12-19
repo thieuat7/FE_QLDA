@@ -8,9 +8,14 @@ export default defineConfig({
         port: 5173,
         proxy: {
             '/api': {
-                target: 'http://localhost:3000',
-                changeOrigin: true,
-                rewrite: (path) => path
+                // Thay đổi target từ localhost sang đường dẫn Render của bạn
+                target: 'https://be-qlda.onrender.com', 
+                
+                // Cần thiết để đánh lừa Backend rằng request đến từ cùng nguồn
+                changeOrigin: true, 
+                
+                // Quan trọng: Tắt kiểm tra SSL vì bạn đang gọi từ localhost (http) sang Render (https)
+                secure: false, 
             }
         }
     }

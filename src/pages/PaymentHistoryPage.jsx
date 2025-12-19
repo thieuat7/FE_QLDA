@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 // ✅ Import đúng file ApiService chúng ta đã tạo
 import apiService from '../services/apiService';
-import AdminLayout from '../../components/AdminLayout';
+import AdminLayout from '../components/AdminLayout';
 import './AdminPaymentHistoryPage.css';
 
 const AdminPaymentHistoryPage = () => {

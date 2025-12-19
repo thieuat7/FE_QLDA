@@ -1,7 +1,14 @@
 // Service để gọi API
 import axios from 'axios';
 
-const API_URL = '/api'; // Proxy qua Vite
+// -----------------------------------------------------------------------------
+// SỬA ĐỔI QUAN TRỌNG TẠI ĐÂY:
+// 1. Nếu trên Render: Nó sẽ lấy link từ biến môi trường VITE_API_URL
+// 2. Nếu dưới Local: Nó sẽ lấy http://localhost:3000/api (hoặc link bạn muốn)
+// -----------------------------------------------------------------------------
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+
+console.log('Current API URL:', API_URL); // Log ra để kiểm tra đang chạy môi trường nào
 
 // Tạo axios instance với config mặc định
 const axiosInstance = axios.create({
@@ -9,6 +16,7 @@ const axiosInstance = axios.create({
     headers: {
         'Content-Type': 'application/json'
     }
+    // Lưu ý: Không cần withCredentials: true trừ khi bạn dùng Cookie
 });
 
 // Interceptor để thêm token vào mỗi request
@@ -39,8 +47,10 @@ axiosInstance.interceptors.response.use(
                     message: error.response?.data?.message || 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.'
                 }
             }));
-
-            // Hãy để AuthContext hiện Modal lên cho người dùng chọn "Đăng nhập lại".
+            
+            // Xóa token cũ đi để tránh loop lỗi
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
         }
 
         // Vẫn trả về Promise.reject để component đang gọi API biết đường tắt Loading

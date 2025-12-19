@@ -2,9 +2,14 @@
    HomePage - Modern E-commerce Design
    =========================== */
 
+:root {
+    --container-max-width: 1685px;
+    /* changed per request to increase page width */
+}
+
 .homepage-modern {
     min-height: 100vh;
-    background: #f8f9fa;
+    background: linear-gradient(135deg, #f8fafc 0%, #e9ecef 100%);
 }
 
 /* ===========================
@@ -86,7 +91,8 @@
 /* Search Section */
 .search-section {
     flex: 1;
-    max-width: 600px;
+    max-width: 800px;
+
 }
 
 .search-form {
@@ -107,7 +113,7 @@
     padding: 0.9rem 1.5rem;
     border: none;
     outline: none;
-    font-size: 0.95rem;
+    font-size: 0.99rem;
 }
 
 .search-btn {
@@ -249,7 +255,6 @@
     align-items: center;
     gap: 0.5rem;
     padding: 1rem 1.5rem;
-    color: white;
     text-decoration: none;
     font-weight: 600;
     font-size: 0.9rem;
@@ -300,16 +305,29 @@
 }
 
 /* ===========================
-   Hero Banner Slider
+    Hero Banner Slider
    =========================== */
 .hero-banner {
     position: relative;
     overflow: hidden;
+    /* Thêm 3 dòng dưới để căn giữa toàn bộ khối banner */
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 20px 0;
+    /* Khoảng cách trên dưới cho đẹp */
 }
 
 .banner-slider {
     position: relative;
-    height: 500px;
+    /* Kích thước chính xác theo yêu cầu */
+    width: 1670px;
+    height: 662px;
+    /* Căn giữa */
+    margin: 0 auto;
+    border-radius: 15px;
+    /* Bo góc nhẹ cho hiện đại */
+    overflow: hidden;
 }
 
 .slide {
@@ -320,14 +338,25 @@
     transition: opacity 0.8s ease-in-out;
     display: flex;
     align-items: center;
+    /* Cấu hình để ảnh cover toàn bộ khung 1670x662 và ra giữa */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    /* Prevent inactive slides from capturing pointer events (fixes clicks/hover going to hidden slides) */
+    pointer-events: none;
+    z-index: 1;
 }
 
 .slide.active {
     opacity: 1;
+    pointer-events: auto;
+    z-index: 2;
 }
 
 .slide-content {
     width: 100%;
+    padding: 0 80px;
+    /* Thêm padding để chữ không dính sát mép */
 }
 
 .slide-text {
@@ -406,11 +435,13 @@
 }
 
 .prev-btn {
-    left: 2rem;
+    left: 20px;
+    /* Chỉnh lại khoảng cách cho sát viền 1670px */
 }
 
 .next-btn {
-    right: 2rem;
+    right: 20px;
+    /* Chỉnh lại khoảng cách cho sát viền 1670px */
 }
 
 .slider-dots {
@@ -439,11 +470,20 @@
     border-radius: 6px;
 }
 
+/* Tự động co giãn nếu màn hình nhỏ hơn 1670px */
+@media (max-width: 1670px) {
+    .banner-slider {
+        width: 95%;
+        height: auto;
+        aspect-ratio: 1670 / 662;
+    }
+}
+
 /* ===========================
    Container
    =========================== */
 .container {
-    max-width: 1400px;
+    max-width: var(--container-max-width, 1600px);
     margin: 0 auto;
     padding: 0 2rem;
 }
@@ -451,10 +491,10 @@
 /* ===========================
    Sections
    =========================== */
-.categories-section,
+/* .categories-section,
 .products-section {
-    padding: 3rem 0;
-}
+    padding: 3.5rem 0 4rem 0;
+} */
 
 .section-title {
     font-size: 2rem;
@@ -536,11 +576,15 @@
 /* ===========================
    Products Grid
    =========================== */
+/* Force 4 products per row on large screens, with responsive fallbacks */
 .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 2rem;
-    margin-bottom: 3rem;
+    grid-template-columns: repeat(4, 1fr);
+    /* desktop: 4 columns */
+    gap: 1.5rem;
+    margin-bottom: 3.5rem;
+    padding: 0.5rem 0;
+    align-items: stretch;
 }
 
 /* ===========================
@@ -602,7 +646,7 @@
    =========================== */
 
 /* Tablets */
-@media (max-width: 1024px) {
+@media (max-width: 1600px) {
     .container {
         padding: 0 1.5rem;
     }
@@ -628,7 +672,7 @@
     }
 
     .banner-slider {
-        height: 400px;
+        height: 420px;
     }
 
     .slide-title {
@@ -644,9 +688,10 @@
         gap: 1rem;
     }
 
+    /* Products grid responsive overrides for tablets and smaller */
     .products-grid {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 1.5rem;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.4rem;
     }
 
     .section-title {
@@ -706,7 +751,7 @@
     }
 
     .banner-slider {
-        height: 300px;
+        height: 320px;
     }
 
     .slide-title {
@@ -778,7 +823,7 @@
     }
 
     .products-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
         gap: 1rem;
     }
 
@@ -816,7 +861,7 @@
     }
 
     .banner-slider {
-        height: 250px;
+        height: 270px;
     }
 
     .slide-title {
@@ -829,6 +874,7 @@
 
     .products-grid {
         grid-template-columns: 1fr 1fr;
+        min-width: 0;
     }
 
     .categories-grid {

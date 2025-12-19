@@ -13,6 +13,28 @@ const MomoReturnPage = () => {
     const [message, setMessage] = useState('Đang xử lý thanh toán...');
     const [orderInfo, setOrderInfo] = useState({});
 
+    // Helpers để mô phỏng khi test local (localhost) - không gọi server
+    const simulateSuccess = () => {
+        setStatus('success');
+        setMessage('Thanh toán MoMo (mô phỏng) thành công!');
+        setOrderInfo({
+            orderId: 'LOCAL-12345',
+            amount: 100000,
+            orderInfo: 'Mô phỏng thanh toán',
+            transId: 'MOCK-TRANS-0001',
+            payType: 'Quét mã QR',
+            responseTime: new Date().toLocaleString()
+        });
+    };
+
+    const simulateFailure = () => {
+        setStatus('failed');
+        setMessage('Thanh toán MoMo (mô phỏng) thất bại (mã lỗi: 3003)');
+        setOrderInfo({
+            orderId: 'LOCAL-12345',
+            amount: 100000
+        });
+    };
     useEffect(() => {
         // Lấy params từ URL callback của Momo
         const resultCode = searchParams.get('resultCode');
@@ -112,6 +134,14 @@ const MomoReturnPage = () => {
         <>
             <Header />
             <div className="payment-result-container">
+                <div className="sandbox-note" style={{ padding: '10px', border: '1px dashed #ccc', margin: '12px 0', borderRadius: 6 }}>
+                    <strong>Chú ý (Sandbox):</strong> Nếu bạn chạy backend trên <em>localhost</em>, MoMo sandbox có thể không xử lý callback/confirm được vì URL không public.
+                    Để test quét QR thật, hãy mở tunnel (ví dụ: <em>ngrok</em>) và cấu hình return/webhook URL public trên backend/MoMo.
+                    <div style={{ marginTop: 8 }}>
+                        <button className="btn-secondary" style={{ marginRight: 8 }} onClick={simulateSuccess}>Mô phỏng thành công</button>
+                        <button className="btn-secondary" onClick={simulateFailure}>Mô phỏng thất bại</button>
+                    </div>
+                </div>
                 {status === 'processing' && (
                     <div className="payment-result">
                         <div className="spinner"></div>

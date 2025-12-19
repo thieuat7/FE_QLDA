@@ -48,8 +48,7 @@ const OrderSuccessPage = () => {
                         <p className="order-id">Mã đơn hàng: <strong>#{orderId}</strong></p>
 
                         <div className="success-message">
-                            <p>Cảm ơn bạn đã tin tưởng mua hàng tại I6O Store!</p>
-                            <p>Chúng tôi đã gửi email xác nhận đến địa chỉ của bạn.</p>
+                            <p>Cảm ơn bạn đã tin tưởng mua hàng tại BaByShark Store!</p>
                             {method && (
                                 <p className="payment-info">
                                     Phương thức thanh toán: <strong>{getPaymentMethodName(method)}</strong>

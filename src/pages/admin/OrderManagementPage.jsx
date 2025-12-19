@@ -8,6 +8,7 @@ const OrderManagementPage = () => {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [showStatusModal, setShowStatusModal] = useState(false);
+    const [chosenStatus, setChosenStatus] = useState('');
 
     // Pagination
     const [currentPage, setCurrentPage] = useState(1);
@@ -50,10 +51,23 @@ const OrderManagementPage = () => {
 
             // Check if token is invalid (401 Unauthorized)
             if (response.status === 401) {
-                alert('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
-                window.location.href = '/login';
+                // Emit auth-expired so AuthContext handles logout/redirect centrally
+                try {
+                    window.dispatchEvent(new CustomEvent('auth-expired', { detail: { source: 'OrderManagementPage', status: 401 } }));
+                } catch (e) {
+                    // Fallback: if dispatch fails, only clear if not admin
+                    const rawUser = localStorage.getItem('user');
+                    const currentUser = rawUser ? JSON.parse(rawUser) : null;
+                    const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 1 || currentUser?.role === '1';
+                    if (!isAdmin) {
+                        alert('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('user');
+                        window.location.href = '/login';
+                    } else {
+                        console.warn('auth-expired dispatch failed but current user is admin — suppressing auto-logout.');
+                    }
+                }
                 return;
             }
 
@@ -82,6 +96,13 @@ const OrderManagementPage = () => {
     useEffect(() => {
         fetchOrders();
     }, [fetchOrders]);
+
+    // When opening status modal, initialize chosenStatus to current order status
+    useEffect(() => {
+        if (showStatusModal && selectedOrder) {
+            setChosenStatus(selectedOrder.status || 'pending');
+        }
+    }, [showStatusModal, selectedOrder]);
 
     const handleViewDetail = async (orderId) => {
         try {
@@ -316,37 +337,6 @@ const OrderManagementPage = () => {
                                                         ✏️ Cập nhật
                                                     </button>
                                                 )}
-                                                {order.paymentStatus === 'pending' && (
-                                                    <button
-                                                        onClick={async () => {
-                                                            if (window.confirm('Xác nhận đơn này đã thanh toán?')) {
-                                                                try {
-                                                                    const token = localStorage.getItem('token');
-                                                                    const response = await fetch(`http://localhost:3000/api/admin/orders/${order.id}/payment-status`, {
-                                                                        method: 'PUT',
-                                                                        headers: {
-                                                                            'Content-Type': 'application/json',
-                                                                            'Authorization': `Bearer ${token}`
-                                                                        },
-                                                                        body: JSON.stringify({ paymentStatus: 'paid' })
-                                                                    });
-                                                                    const result = await response.json();
-                                                                    if (result.success) {
-                                                                        alert('Đã xác nhận thanh toán!');
-                                                                        fetchOrders();
-                                                                    } else {
-                                                                        alert(result.message || 'Lỗi xác nhận thanh toán');
-                                                                    }
-                                                                } catch (err) {
-                                                                    alert('Lỗi xác nhận thanh toán');
-                                                                }
-                                                            }
-                                                        }}
-                                                        className="btn-confirm-payment"
-                                                    >
-                                                        💸 Xác nhận thanh toán
-                                                    </button>
-                                                )}
                                             </td>
                                         </tr>
                                     ))}
@@ -485,33 +475,32 @@ const OrderManagementPage = () => {
                                 <p>Trạng thái hiện tại: <strong>{getStatusText(selectedOrder.status)}</strong></p>
 
                                 <div className="status-options">
-                                    {selectedOrder.status === 'pending' && (
-                                        <>
-                                            <button onClick={() => handleUpdateStatus('confirmed')} className="btn-status confirmed">
-                                                ✅ Xác nhận đơn hàng
-                                            </button>
-                                            <button onClick={() => handleUpdateStatus('cancelled')} className="btn-status cancelled">
-                                                ❌ Hủy đơn hàng
-                                            </button>
-                                        </>
-                                    )}
+                                    <label htmlFor="status-select">Chọn trạng thái mới:</label>
+                                    <select
+                                        id="status-select"
+                                        value={chosenStatus}
+                                        onChange={(e) => setChosenStatus(e.target.value)}
+                                    >
+                                        <option value="pending">Chờ xác nhận</option>
+                                        <option value="processing">Đang xử lý</option>
+                                        <option value="confirmed">Đã xác nhận</option>
+                                        <option value="shipping">Đang giao hàng</option>
+                                        <option value="delivered">Đã giao hàng</option>
+                                        <option value="cancelled">Đã hủy</option>
+                                    </select>
 
-                                    {selectedOrder.status === 'confirmed' && (
-                                        <>
-                                            <button onClick={() => handleUpdateStatus('shipping')} className="btn-status shipping">
-                                                🚚 Bắt đầu giao hàng
-                                            </button>
-                                            <button onClick={() => handleUpdateStatus('cancelled')} className="btn-status cancelled">
-                                                ❌ Hủy đơn hàng
-                                            </button>
-                                        </>
-                                    )}
-
-                                    {selectedOrder.status === 'shipping' && (
-                                        <button onClick={() => handleUpdateStatus('delivered')} className="btn-status delivered">
-                                            ✅ Đã giao hàng thành công
+                                    <div style={{ marginTop: '12px' }}>
+                                        <button
+                                            onClick={() => handleUpdateStatus(chosenStatus)}
+                                            className="btn-status update"
+                                            style={{ marginRight: '8px' }}
+                                        >
+                                            💾 Cập nhật
                                         </button>
-                                    )}
+                                        <button onClick={() => setShowStatusModal(false)} className="btn-status cancel">
+                                            Hủy
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

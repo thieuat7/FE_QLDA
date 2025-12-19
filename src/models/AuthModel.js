@@ -22,12 +22,17 @@ class AuthModel {
         const userStr = localStorage.getItem('user');
 
         if (token && userStr) {
-            this.token = token;
-            this.user = JSON.parse(userStr);
-            this.isAuthenticated = true;
-            return true;
+            try {
+                this.token = token;
+                this.user = JSON.parse(userStr);
+                return true;
+            } catch (error) {
+                console.error("Lỗi dữ liệu auth trong storage:", error);
+                // Nếu dữ liệu rác, xóa sạch để tránh lỗi lặp lại
+                this.clearAuth();
+                return false;
+            }
         }
-
         return false;
     }
 

@@ -29,6 +29,7 @@ import UserManagementPage from './pages/admin/UserManagementPage';
 import './App.css';
 import AdminPaymentHistoryPage from './pages/admin/AdminPaymentHistoryPage';
 import PaymentHistoryPage from './pages/PaymentHistoryPage';
+import TinTucPage from './pages/TinTucPage';
 
 function App() {
     return (
@@ -68,6 +69,16 @@ function App() {
                             element={
                                 <ProtectedRoute>
                                     <HomePage />
+                                </ProtectedRoute>
+                            }
+                        />
+
+                        {/* News page - Tin Tức */}
+                        <Route
+                            path="/tin-tuc"
+                            element={
+                                <ProtectedRoute>
+                                    <TinTucPage />
                                 </ProtectedRoute>
                             }
                         />

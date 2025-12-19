@@ -85,13 +85,6 @@ const AdminPaymentHistoryPage = () => {
                         <option value="failed">Thất bại</option>
                         <option value="refunded">Hoàn tiền</option>
                     </select>
-                    <select value={sortBy} onChange={e => setSortBy(e.target.value)}>
-                        <option value="createdAt">Ngày tạo</option>
-                        <option value="totalAmount">Tổng tiền</option>
-                        <option value="status">Trạng thái đơn</option>
-                        <option value="paymentStatus">Trạng thái thanh toán</option>
-                        <option value="code">Mã đơn</option>
-                    </select>
                     <select value={sortOrder} onChange={e => setSortOrder(e.target.value)}>
                         <option value="DESC">Giảm dần</option>
                         <option value="ASC">Tăng dần</option>
@@ -116,23 +109,40 @@ const AdminPaymentHistoryPage = () => {
                                 <tr><td colSpan={8}>Đang tải...</td></tr>
                             ) : orders.length === 0 ? (
                                 <tr><td colSpan={8}>Không có dữ liệu</td></tr>
-                            ) : orders.map(order => (
-                                <tr key={order.id}>
-                                    <td>{order.code}</td>
-                                    <td>{order.customerName}</td>
-                                    <td>{order.paymentMethod}</td>
-                                    <td>{order.status}</td>
-                                    <td>{order.paymentStatus}</td>
-                                    <td>{order.finalAmount.toLocaleString()}₫</td>
-                                    <td>{new Date(order.createdAt).toLocaleString()}</td>
-                                    <td className="action-cell">
-                                        <button className="btn-view" onClick={() => handleViewDetail(order)}>👁️ Xem</button>
-                                        {order.paymentStatus === 'pending' && (
-                                            <button className="btn-confirm" onClick={() => handleConfirmPayment(order.id)}>💸 Xác nhận</button>
-                                        )}
-                                    </td>
-                                </tr>
-                            ))}
+                            ) : orders
+                                .filter(order => {
+                                    const method = (order.paymentMethod || '').toString().toLowerCase().replace(/\s|_/g, '');
+                                    // Bank transfer: luôn hiển thị
+                                    const isBankTransfer = [
+                                        'banktransfer', 'bank_transfer', 'banktransfer', 'Bank Transfer'
+                                    ].includes(method) || method.includes('bank') && method.includes('transfer');
+                                    if (isBankTransfer) return true;
+                                    // Các phương thức khác: chỉ hiện nếu đã thanh toán thành công
+                                    return order.paymentStatus === 'paid';
+                                })
+                                .map(order => {
+                                    const method = (order.paymentMethod || '').toString().toLowerCase().replace(/\s|_/g, '');
+                                    const isBankTransfer = [
+                                        'banktransfer', 'bank_transfer', 'banktransfer', 'Bank Transfer'
+                                    ].includes(method) || method.includes('bank') && method.includes('transfer');
+                                    return (
+                                        <tr key={order.id}>
+                                            <td>{order.code}</td>
+                                            <td>{order.customerName}</td>
+                                            <td>{order.paymentMethod}</td>
+                                            <td>{order.status}</td>
+                                            <td>{order.paymentStatus}</td>
+                                            <td>{order.finalAmount.toLocaleString()}₫</td>
+                                            <td>{new Date(order.createdAt).toLocaleString()}</td>
+                                            <td className="action-cell">
+                                                <button className="btn-view" onClick={() => handleViewDetail(order)}> Xem chi tiết</button>
+                                                {order.paymentStatus === 'pending' && isBankTransfer && (
+                                                    <button className="btn-confirm" onClick={() => handleConfirmPayment(order.id)}> Xác nhận thanh toán</button>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                         </tbody>
                     </table>
                 </div>

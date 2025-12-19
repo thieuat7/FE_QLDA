@@ -68,13 +68,21 @@ const GoogleCallbackPage = () => {
                     }
                 } else {
                     console.error('Failed to get user info:', data);
-                    localStorage.removeItem('token');
-                    if (isMounted) navigate('/login', { replace: true });
+                    try {
+                        window.dispatchEvent(new CustomEvent('auth-expired', { detail: { source: 'GoogleCallback', message: data?.message || 'Failed to fetch user' } }));
+                    } catch (e) {
+                        localStorage.removeItem('token');
+                        if (isMounted) navigate('/login', { replace: true });
+                    }
                 }
             } catch (error) {
                 console.error('Error fetching user info:', error);
-                localStorage.removeItem('token');
-                if (isMounted) navigate('/login', { replace: true });
+                try {
+                    window.dispatchEvent(new CustomEvent('auth-expired', { detail: { source: 'GoogleCallback', message: error?.message || 'Error fetching user info' } }));
+                } catch (e) {
+                    localStorage.removeItem('token');
+                    if (isMounted) navigate('/login', { replace: true });
+                }
             }
         };
 

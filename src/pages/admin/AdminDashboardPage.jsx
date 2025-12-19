@@ -14,7 +14,7 @@ import AdminLayout from '../../components/AdminLayout';
 import './AdminDashboardPage.css';
 
 // ✅ IMPORT SERVICE (Thay vì dùng fetch trực tiếp)
-import orderService from '../../services/orderService';
+import orderService from '../services/orderService';
 
 // Register Chart.js components
 ChartJS.register(

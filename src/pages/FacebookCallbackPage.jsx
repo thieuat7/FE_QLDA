@@ -37,7 +37,7 @@ const FacebookCallbackPage = () => {
                 localStorage.setItem('token', token);
 
                 // Gọi API lấy thông tin user
-                const response = await fetch('http://localhost:3000/api/auth/me', {
+                const response = await fetch('https://be-qlda.onrender.com/api/auth/me', {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,

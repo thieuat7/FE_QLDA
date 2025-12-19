@@ -39,7 +39,7 @@ const GoogleCallbackPage = () => {
                 console.log('Fetching user info from API...');
 
                 // Gọi API lấy thông tin user
-                const response = await fetch('http://localhost:3000/api/auth/me', {
+                const response = await fetch('https://be-qlda.onrender.com/api/auth/me', {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,

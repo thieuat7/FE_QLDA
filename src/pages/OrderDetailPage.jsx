@@ -300,7 +300,7 @@ const OrderDetailPage = () => {
                                 <div key={item.id} className="order-item">
                                     <div className="item-image">
                                         <img
-                                            src={item.product?.image ? `http://localhost:3000${item.product.image}` : '/placeholder-product.png'}
+                                            src={item.product?.image ? `https://be-qlda.onrender.com${item.product.image}` : '/placeholder-product.png'}
                                             alt={item.product?.title || 'Sản phẩm'}
                                             onError={(e) => {
                                                 e.target.src = '/placeholder-product.png';

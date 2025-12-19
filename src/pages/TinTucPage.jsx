@@ -4,13 +4,12 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import './TinTucPage.css';
 
-const API_BASE = 'http://localhost:3000/api/tin-tuc';
+const API_BASE = 'https://be-qlda.onrender.com/api/tin-tuc';
 
 function TinTucPage() {
     const [news, setNews] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [pathFilter, setPathFilter] = useState('');
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(8);
     const [displayNews, setDisplayNews] = useState([]);

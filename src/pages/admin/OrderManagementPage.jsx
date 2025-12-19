@@ -34,7 +34,7 @@ const OrderManagementPage = () => {
             setLoading(true);
             const token = localStorage.getItem('token');
 
-            let url = `http://localhost:3000/api/admin/orders?page=${currentPage}&limit=20`;
+            let url = `https://be-qlda.onrender.com/api/admin/orders?page=${currentPage}&limit=20`;
 
             if (filterStatus) {
                 url += `&status=${filterStatus}`;
@@ -107,7 +107,7 @@ const OrderManagementPage = () => {
     const handleViewDetail = async (orderId) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:3000/api/admin/orders/${orderId}`, {
+            const response = await fetch(`https://be-qlda.onrender.com/api/admin/orders/${orderId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -134,7 +134,7 @@ const OrderManagementPage = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:3000/api/admin/orders/${selectedOrder.id}/status`, {
+            const response = await fetch(`https://be-qlda.onrender.com/api/admin/orders/${selectedOrder.id}/status`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -406,7 +406,7 @@ const OrderManagementPage = () => {
                                     <div className="order-items">
                                         {selectedOrder.OrderDetails?.map((item) => (
                                             <div key={item.id} className="order-item">
-                                                <img src={`http://localhost:3000${item.product?.image}`} alt={item.product?.title} />
+                                                <img src={`https://be-qlda.onrender.com${item.product?.image}`} alt={item.product?.title} />
                                                 <div className="item-info">
                                                     <h4>{item.product?.title}</h4>
                                                     <p>Mã: {item.product?.productCode}</p>

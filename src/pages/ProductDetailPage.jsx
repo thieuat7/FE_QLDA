@@ -91,7 +91,7 @@ const ProductDetailPage = () => {
 
     const loadAvailableDiscounts = async () => {
         try {
-            const response = await fetch('http://localhost:3000/api/discounts/public');
+            const response = await fetch('https://be-qlda.onrender.com/api/discounts/public');
 
             const result = await response.json();
             console.log('=== DISCOUNT API RESPONSE ===');

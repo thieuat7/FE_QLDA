@@ -20,7 +20,7 @@ const CategoryManagementPage = () => {
     const fetchCategories = async () => {
         try {
             setLoading(true);
-            const response = await fetch('http://localhost:3000/api/categories');
+            const response = await fetch('https://be-qlda.onrender.com/api/categories');
             const result = await response.json();
 
             if (result.success) {
@@ -73,8 +73,8 @@ const CategoryManagementPage = () => {
 
         try {
             const url = editingCategory
-                ? `http://localhost:3000/api/categories/${editingCategory.id}`
-                : 'http://localhost:3000/api/categories';
+                ? `https://be-qlda.onrender.com/api/categories/${editingCategory.id}`
+                : 'https://be-qlda.onrender.com/api/categories';
 
             const method = editingCategory ? 'PUT' : 'POST';
 
@@ -126,7 +126,7 @@ const CategoryManagementPage = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:3000/api/categories/${categoryId}`, {
+            const response = await fetch(`https://be-qlda.onrender.com/api/categories/${categoryId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`

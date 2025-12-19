@@ -174,7 +174,7 @@ const HomePage = () => {
                     setPagination({ totalProducts: 0, currentPage: 1, totalPages: 1 });
                 }
             })
-            .catch((error) => {
+            .catch(() => {
                 setProducts([]);
                 setPagination({ totalProducts: 0, currentPage: 1, totalPages: 1 });
             })

@@ -38,7 +38,7 @@ const ProductManagementPage = () => {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch('http://localhost:3000/api/categories');
+            const response = await fetch('https://be-qlda.onrender.com/api/categories');
             const result = await response.json();
             if (result.success) {
                 setCategories(result.data.categories);
@@ -51,7 +51,7 @@ const ProductManagementPage = () => {
     const fetchProducts = useCallback(async () => {
         try {
             setLoading(true);
-            let url = `http://localhost:3000/api/products?page=${currentPage}&limit=10`;
+            let url = `https://be-qlda.onrender.com/api/products?page=${currentPage}&limit=10`;
 
             if (filterCategory) {
                 url += `&category_id=${filterCategory}`;
@@ -104,8 +104,8 @@ const ProductManagementPage = () => {
 
         try {
             const url = editingProduct
-                ? `http://localhost:3000/api/products/${editingProduct.id}`
-                : 'http://localhost:3000/api/products';
+                ? `https://be-qlda.onrender.com/api/products/${editingProduct.id}`
+                : 'https://be-qlda.onrender.com/api/products';
 
             const method = editingProduct ? 'PUT' : 'POST';
 
@@ -149,7 +149,7 @@ const ProductManagementPage = () => {
 
     const handleEdit = async (productId) => {
         try {
-            const response = await fetch(`http://localhost:3000/api/products/${productId}`);
+            const response = await fetch(`https://be-qlda.onrender.com/api/products/${productId}`);
             const result = await response.json();
 
             if (result.success) {
@@ -169,7 +169,7 @@ const ProductManagementPage = () => {
                     isActive: product.isActive,
                     isHot: product.isHot
                 });
-                setImagePreview(`http://localhost:3000${product.image}`);
+                setImagePreview(`https://be-qlda.onrender.com${product.image}`);
                 setShowModal(true);
             }
         } catch (error) {
@@ -190,7 +190,7 @@ const ProductManagementPage = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:3000/api/products/${productId}`, {
+            const response = await fetch(`https://be-qlda.onrender.com/api/products/${productId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -316,7 +316,7 @@ const ProductManagementPage = () => {
                                             <td>{product.id}</td>
                                             <td className="image-cell">
                                                 <img
-                                                    src={`http://localhost:3000${product.image}`}
+                                                    src={`https://be-qlda.onrender.com${product.image}`}
                                                     alt={product.title}
                                                     onError={(e) => e.target.src = '/placeholder.png'}
                                                 />

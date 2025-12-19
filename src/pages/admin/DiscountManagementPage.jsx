@@ -32,7 +32,7 @@ const DiscountManagementPage = () => {
             const token = localStorage.getItem('token');
 
             const response = await fetch(
-                `http://localhost:3000/api/discounts?page=${currentPage}&limit=20`,
+                `https://be-qlda.onrender.com/api/discounts?page=${currentPage}&limit=20`,
                 {
                     headers: { 'Authorization': `Bearer ${token}` }
                 }
@@ -62,8 +62,8 @@ const DiscountManagementPage = () => {
         try {
             const token = localStorage.getItem('token');
             const url = editingDiscount
-                ? `http://localhost:3000/api/discounts/${editingDiscount.id}`
-                : 'http://localhost:3000/api/discounts';
+                ? `https://be-qlda.onrender.com/api/discounts/${editingDiscount.id}`
+                : 'https://be-qlda.onrender.com/api/discounts';
 
             const method = editingDiscount ? 'PUT' : 'POST';
 
@@ -116,7 +116,7 @@ const DiscountManagementPage = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:3000/api/discounts/${id}`, {
+            const response = await fetch(`https://be-qlda.onrender.com/api/discounts/${id}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -138,7 +138,7 @@ const DiscountManagementPage = () => {
     const toggleActive = async (discount) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:3000/api/discounts/${discount.id}`, {
+            const response = await fetch(`https://be-qlda.onrender.com/api/discounts/${discount.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
